@@ -4,8 +4,6 @@ let _token = ""; // Holds the value of the current "temporary token".
 export async function getTemporaryToken(): Promise<string> {
     if (_token) return _token;
 
-    console.log(process.env.OSU_CLIENT_ID, process.env.OSU_CLIENT_SECRET)
-
     const data = await fetch("https://osu.ppy.sh/oauth/token", {
         method: "POST",
         headers: {
