@@ -5,10 +5,16 @@ import path from "node:path";
 
 import * as config from "./config";
 
+const receiver = new BoltJS.ExpressReceiver({ signingSecret: process.env.SIGNING_SECRET! })
+
 const app = new BoltJS.App({
     signingSecret: process.env.SIGNING_SECRET,
-    token: process.env.APP_TOKEN
+    token: process.env.BOT_TOKEN,
+    receiver
 });
+
+import setupRouter from "./http";
+setupRouter(receiver.app, receiver.router)
 
 if (config.interactionImports.actions) {
     const actionsDir = await fs.readdir(path.join(process.cwd(), "src", "actions"));
@@ -83,6 +89,8 @@ if (config.interactionImports.views) {
 }
 
 app.start(process.env.PORT ?? 3000).then(async () => {
+    import('./cron');
+
     console.log(`⚡ Bolt app is running in ${process.env.NODE_ENV} mode!`)
 
     if (process.env.NODE_ENV == "development" && process.env.NGROK_TOKEN != "NONE") {

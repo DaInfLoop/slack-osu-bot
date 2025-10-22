@@ -1,0 +1,26 @@
+<!doctype html>
+<html class="w-full h-full">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+</head>
+
+<body class="w-full h-full">
+<div class="flex items-center justify-center h-full bg-white [--pattern-fg:var(--color-gray-950)]/5 dark:bg-gray-950 dark:[--pattern-fg:var(--color-white)]/10">
+  <div class="rounded-xl row-start-3 flex max-w-lg flex-col bg-gray-100 p-2 dark:bg-white/10">
+    <div class="rounded-xl bg-white p-10 text-sm/7 text-gray-700 dark:bg-gray-950 dark:text-gray-300">
+      <div class="space-y-6">
+        <h1 class="text-lg font-bold">You're joining an osu! multiplayer lobby.</h1>
+
+        <p>The room ID is <strong><%= code %></strong>.</p>
+
+        <a href="osu://room/<%= code %>" class="text-center font-semibold block px-5 py-2.5 bg-pink-400 text-white font-medium rounded-xl shadow-md hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:ring-offset-2 transition-all duration-200">Join Lobby</a>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+
+</html>
