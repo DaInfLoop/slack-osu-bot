@@ -1,9 +1,9 @@
 import type { AllMiddlewareArgs, SlackCommandMiddlewareArgs, StringIndexed } from "@slack/bolt";
-import type { UsersInfoResponse } from "@slack/web-api";
+import type { Block, KnownBlock, UsersInfoResponse } from "@slack/web-api";
 import { sendGET } from "../../utils";
 import sql from "../../postgres";
 
-async function generateProfile(opts: { slackProfile: UsersInfoResponse['user'], osuId?: string | number, osuUsername?: string, osuProfile?: { linked: true, id: number, username: string, avatar_url: string } }) {
+async function generateProfile(opts: { slackProfile?: UsersInfoResponse['user'], osuId?: string | number, osuUsername?: string, osuProfile?: { linked: true, id: number, username: string, avatar_url: string } }): Promise<(Block | KnownBlock)[]> {
     const osuProfile: { linked: true, id: number, username: string, avatar_url: string } | { linked: false } = opts.osuProfile ?? await (async () => {
         if (opts.osuId) return {
             linked: true,
@@ -40,7 +40,21 @@ async function generateProfile(opts: { slackProfile: UsersInfoResponse['user'], 
                 "image_url": osuProfile.linked ? osuProfile.avatar_url : 'https://osu.ppy.sh/images/layout/avatar-guest@2x.png',
                 "alt_text": osuProfile.linked ? `${osuProfile.username}'s osu! profile picture` : `default osu! profile picture`
             }
-        }
+        },
+        ...(osuProfile.linked ? [{
+            type: 'actions',
+            elements: [
+                {
+                    type: 'button',
+                    action_id: 'noop',
+                    url: `osu://u/${osuProfile.id}`,
+                    text: {
+                        type: 'plain_text',
+                        text: 'View user in osu!lazer',
+                    }
+                }
+            ]
+        }] as (KnownBlock | Block)[] : [])
     ]
 }
 
@@ -67,7 +81,39 @@ export default async function ProfileCommand(ctx: SlackCommandMiddlewareArgs & A
         // osu! user
         const user = await sendGET<{ id: number, username: string, avatar_url: string }>(`/users/${arg}?key=username`);
 
+        if (user) {
+            const userLink = await sql<{ osu_id: string, slack_id: string }[]>`SELECT * FROM users WHERE osu_id = ${user.id}`;
 
+            if (userLink[0]) {
+                const slackProfile = (await ctx.client.users.info({ user: userLink[0].slack_id })).user!;
+
+                await ctx.respond({
+                    response_type: 'in_channel',
+                    text: `<@${ctx.body.user_id}> ran \`/osu-profile\``,
+                    blocks: await generateProfile({ slackProfile, osuProfile: { linked: true, ...user } })
+                })
+            } else {
+                await ctx.respond({
+                    response_type: 'in_channel',
+                    text: `<@${ctx.body.user_id}> ran \`/osu-profile\``,
+                    blocks: await generateProfile({ osuProfile: { linked: true, ...user } })
+                })
+            }
+        } else {
+            await ctx.respond({
+                response_type: 'in_channel',
+                text: `<@${ctx.body.user_id}> ran \`/osu-profile\``,
+                blocks: [
+                    {
+                        type: 'section',
+                        text: {
+                            type: 'mrkdwn',
+                            text: `:warning: I couldn't find an osu! user with the username \`${arg}\`.`
+                        }
+                    }
+                ]
+            })
+        }
     } else {
         // User's own profile
         const userId = ctx.body.user_id;

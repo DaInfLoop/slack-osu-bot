@@ -222,7 +222,7 @@ const t = cron.schedule('5 5 0 * * *', async function dailyChallenge() {
                         url: 'osu://room/' + dailyChallenge.id,
                         text: {
                             type: 'plain_text',
-                            text: 'Open in osu! client'
+                            text: 'Open in osu!lazer'
                         }
                     }
                 ]
