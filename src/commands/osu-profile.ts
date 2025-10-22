@@ -33,7 +33,7 @@ async function generateProfile(opts: { slackProfile: UsersInfoResponse['user'], 
             "type": "section",
             "text": {
                 "type": "mrkdwn",
-                "text": `*Slack Username*: ${opts.slackProfile ? `<https://hackclub.slack.com/team/${opts.slackProfile.id}|${opts.slackProfile.profile!.display_name_normalized}>` : `**Not linked**`}\n*osu! username:* ${osuProfile.linked ? `<https://osu.ppy.sh/users/${osuProfile.id}|${osuProfile.username}` : `**Not linked**`}>`
+                "text": `*Slack Username*: ${opts.slackProfile ? `<https://my.slack.com/team/${opts.slackProfile.id}|${opts.slackProfile.profile!.display_name_normalized}>` : `**Not linked**`}\n*osu! username:* ${osuProfile.linked ? `<https://osu.ppy.sh/users/${osuProfile.id}|${osuProfile.username}` : `**Not linked**`}>`
             },
             "accessory": {
                 "type": "image",
