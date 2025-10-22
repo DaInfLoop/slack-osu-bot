@@ -16,7 +16,7 @@ export default function (express: Application, app: IRouter) {
 
     app.get('/link', async (req, res) => {
         // redirect to hca
-        res.redirect(`https://${HCA_URL}/oauth/authorize?client_id=${process.env.IDV_CLIENT_ID}&redirect_uri=https%3A%2F%2F${process.env.NGROK_DOMAIN && process.env.NODE_ENV == 'development' ? process.env.NGROK_DOMAIN : 'osu.rana.hackclub.app'}%2Fhca%2Foauth_callback&response_type=code&scope=slack_id`)
+        res.redirect(`https://${HCA_URL}/oauth/authorize?client_id=${process.env.IDV_CLIENT_ID}&redirect_uri=${encodeURIComponent(`${req.protocol}://${req.hostname}/hca/oauth_callback`)}&response_type=code&scope=slack_id`)
     })
 
     app.get('/hca/oauth_callback', async (req, res) => {
@@ -29,7 +29,7 @@ export default function (express: Application, app: IRouter) {
             headers: {
                 "Content-Type": "application/x-www-form-urlencoded"
             },
-            body: `client_id=${process.env.IDV_CLIENT_ID}&client_secret=${encodeURIComponent(process.env.IDV_CLIENT_SECRET)}&redirect_uri=${encodeURIComponent(`https://${process.env.NGROK_DOMAIN && process.env.NODE_ENV == 'development' ? process.env.NGROK_DOMAIN : 'osu.rana.hackclub.app'}/hca/oauth_callback`)}&code=${code}&grant_type=authorization_code`
+            body: `client_id=${process.env.IDV_CLIENT_ID}&client_secret=${encodeURIComponent(process.env.IDV_CLIENT_SECRET)}&redirect_uri=${encodeURIComponent(`${req.protocol}://${req.hostname}/hca/oauth_callback`)}&code=${code}&grant_type=authorization_code`
         }).then(res => res.json()) as { access_token?: string };
 
         if (idvRes.access_token) {
@@ -43,7 +43,7 @@ export default function (express: Application, app: IRouter) {
 
             states.set(idvUser.identity.slack_id, state)
 
-            return res.redirect(`https://osu.ppy.sh/oauth/authorize?client_id=${process.env.OSU_CLIENT_ID}&redirect_uri=https%3A%2F%2F${process.env.NGROK_DOMAIN && process.env.NODE_ENV == 'development' ? process.env.NGROK_DOMAIN : 'osu.rana.hackclub.app'}%2Fosu%2Foauth_callback&response_type=code&state=${encodeURIComponent(idvUser.identity.slack_id + ":" + md5(state))}&scope=public`)
+            return res.redirect(`https://osu.ppy.sh/oauth/authorize?client_id=${process.env.OSU_CLIENT_ID}&redirect_uri=${encodeURIComponent(`${req.protocol}://${req.hostname}/osu/oauth_callback`)}&response_type=code&state=${encodeURIComponent(idvUser.identity.slack_id + ":" + md5(state))}&scope=public`)
         } else {
             console.log(idvRes)
             return res.json({ ok: false }) && undefined;
@@ -80,7 +80,7 @@ export default function (express: Application, app: IRouter) {
             headers: {
                 "Content-Type": "application/x-www-form-urlencoded"
             },
-            body: `client_id=${process.env.OSU_CLIENT_ID}&client_secret=${encodeURIComponent(process.env.OSU_CLIENT_SECRET!)}&code=${code}&grant_type=authorization_code&scope=public&redirect_uri=${encodeURIComponent(`https://${process.env.NGROK_DOMAIN && process.env.NODE_ENV == 'development' ? process.env.NGROK_DOMAIN : 'osu.rana.hackclub.app'}/osu/oauth_callback`)}`
+            body: `client_id=${process.env.OSU_CLIENT_ID}&client_secret=${encodeURIComponent(process.env.OSU_CLIENT_SECRET!)}&code=${code}&grant_type=authorization_code&scope=public&redirect_uri=${encodeURIComponent(`${req.protocol}://${req.hostname}/osu/oauth_callback`)}`
         }).then(res => res.json()) as { access_token: undefined, message: string, error: string } | { access_token: string, message: undefined, error: undefined };
 
         if (data.error) {

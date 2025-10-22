@@ -77,11 +77,11 @@ IDV_CLIENT_SECRET=""
 ```
 
 ### Hardcoded values
-The callback URLs for production (+ development if `NGROK_DOMAIN` is not set) is hardcoded to `osu.rana.hackclub.app`, as this is where osu! bot V2 runs usually. You won't usually need to change this during development (except if you don't want to use ngrok).
+The linking URL for production (+ development if `NGROK_DOMAIN` is not set) is hardcoded to `https://osu.rana.hackclub.app/link`, as this is where osu! bot V2 will run usually. You won't usually need to change this during development (except if you don't want to use ngrok).
 
-The URL can be found (and edited) in [`src/commands/osu-multiplayer.ts`](src/commands/osu-multiplayer.ts) and [`http.ts`](http.ts).
+The URL can be found (and edited) in [`src/commands/osu-multiplayer.ts`](src/commands/osu-multiplayer.ts).
 
-However, it is much easier to use ngrok during development to avoid having to change the URLs back afterwards.
+However, it is much easier to use ngrok during development to avoid having to change the URL back afterwards.
 
 ## License
 This repository is licensed under the MIT License. A copy of the license can be viewed at [LICENSE](/LICENSE).
