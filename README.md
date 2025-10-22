@@ -77,7 +77,7 @@ IDV_CLIENT_SECRET=""
 ```
 
 ### Hardcoded values
-The linking URL for production (+ development if `NGROK_DOMAIN` is not set) is hardcoded to `https://osu.rana.hackclub.app/link`, as this is where osu! bot V2 will run usually. You won't usually need to change this during development (except if you don't want to use ngrok).
+The linking URL for production (+ development if `NGROK_DOMAIN` is not set) is hardcoded to `https://osu.dino.icu/link`, as this is where osu! bot V2 will run usually. You won't usually need to change this during development (except if you don't want to use ngrok).
 
 The URL can be found (and edited) in [`src/commands/osu-multiplayer.ts`](src/commands/osu-multiplayer.ts).
 

@@ -13,7 +13,7 @@ export default async function MultiplayerCommand(ctx: SlackCommandMiddlewareArgs
     if (!userLink[0]) {
         return ctx.respond({
             response_type: 'ephemeral',
-            text: `:warning: *Hey <${ctx.body.user_id}>!* You haven't linked your osu! account yet. Head over to https://${process.env.NGROK_DOMAIN && process.env.NODE_ENV == 'development' ? process.env.NGROK_DOMAIN : 'osu.rana.hackclub.app'}/link to do that.`
+            text: `:warning: *Hey <${ctx.body.user_id}>!* You haven't linked your osu! account yet. Head over to https://${process.env.NGROK_DOMAIN && process.env.NODE_ENV == 'development' ? process.env.NGROK_DOMAIN : 'osu.dino.icu'}/link to do that.`
         })
     };
 

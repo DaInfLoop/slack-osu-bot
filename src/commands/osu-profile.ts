@@ -1,26 +1,55 @@
+// live laugh love stackoverflow :D
+function countryCodeToFlag(countryCode?: string) {
+    // Validate the input to be exactly two characters long and all alphabetic
+    if (!countryCode || countryCode.length !== 2 || !/^[a-zA-Z]+$/.test(countryCode)) {
+        return '🏳️'; // White Flag Emoji for unknown or invalid country codes
+    }
+
+    // Convert the country code to uppercase to match the regional indicator symbols
+    const code = countryCode.toUpperCase();
+
+    // Calculate the offset for the regional indicator symbols
+    const offset = 127397;
+
+    // Convert each letter in the country code to its corresponding regional indicator symbol
+    const flag = Array.from(code).map(letter => String.fromCodePoint(letter.charCodeAt(0) + offset)).join('');
+
+    return flag;
+}
+// end stack overflow code
+
 import type { AllMiddlewareArgs, SlackCommandMiddlewareArgs, StringIndexed } from "@slack/bolt";
 import type { Block, KnownBlock, UsersInfoResponse } from "@slack/web-api";
 import { sendGET } from "../../utils";
 import sql from "../../postgres";
 
-async function generateProfile(opts: { slackProfile?: UsersInfoResponse['user'], osuId?: string | number, osuUsername?: string, osuProfile?: { linked: true, id: number, username: string, avatar_url: string } }): Promise<(Block | KnownBlock)[]> {
-    const osuProfile: { linked: true, id: number, username: string, avatar_url: string } | { linked: false } = opts.osuProfile ?? await (async () => {
+// Only using the types we need.
+type OsuProfile = {
+    id: number,
+    username: string,
+    avatar_url: string,
+    country_code: string,
+    playmode: 'osu' | 'taiko' | 'fruits' | 'mania',
+    statistics: {
+        pp: number,
+        country_rank?: number,
+        global_rank?: number,
+    },
+    statistics_rulesets: Record<'osu' | 'taiko' | 'fruits' | 'mania', {
+        pp: number
+    }>
+}
+
+async function generateProfile(opts: { slackProfile?: UsersInfoResponse['user'], osuId?: string | number, osuUsername?: string, osuProfile?: { linked: true } & OsuProfile }): Promise<(Block | KnownBlock)[]> {
+    const osuProfile: { linked: true } & OsuProfile | { linked: false } = opts.osuProfile ?? await (async () => {
         if (opts.osuId) return {
             linked: true,
-            ...(await sendGET<{
-                id: number,
-                username: string,
-                avatar_url: string
-            }>(`/users/${opts.osuId}?key=id`))
+            ...(await sendGET<OsuProfile>(`/users/${opts.osuId}?key=id`))
         }
 
         else if (opts.osuUsername) return {
             linked: true,
-            ...(await sendGET<{
-                id: number,
-                username: string,
-                avatar_url: string
-            }>(`/users/${opts.osuUsername}?key=username`))
+            ...(await sendGET<OsuProfile>(`/users/${opts.osuUsername}?key=username`))
         }
 
         else return {
@@ -33,7 +62,15 @@ async function generateProfile(opts: { slackProfile?: UsersInfoResponse['user'],
             "type": "section",
             "text": {
                 "type": "mrkdwn",
-                "text": `*Slack Username*: ${opts.slackProfile ? `<https://my.slack.com/team/${opts.slackProfile.id}|${opts.slackProfile.profile!.display_name_normalized}>` : `**Not linked**`}\n*osu! username:* ${osuProfile.linked ? `<https://osu.ppy.sh/users/${osuProfile.id}|${osuProfile.username}` : `**Not linked**`}>`
+                "text": `*Slack Username*: ${opts.slackProfile ? `<https://my.slack.com/team/${opts.slackProfile.id}|${opts.slackProfile.profile!.display_name_normalized}>` : `*Not linked*`}
+                        *osu! username:* ${osuProfile.linked ? `<https://osu.ppy.sh/users/${osuProfile.id}|${osuProfile.username}` : `*Not linked*`}>
+                        
+                        *osu! user data*:
+                        - *default/favorite ruleset*: ${osuProfile.linked ? { osu: ":osu-standard: osu!standard", taiko: ":osu-taiko: osu!taiko", fruits: ":osu-catch: osu!catch", mania: ":osu-mania: osu!mania"}[osuProfile.playmode] : `*Not linked*`}
+                        - *pp:* ${osuProfile.linked ? Math.floor(osuProfile.statistics.pp).toLocaleString() : `*Not linked*`}
+                        - *global score:* ${osuProfile.linked ? (osuProfile.statistics.global_rank ? `#\u200B${osuProfile.statistics.global_rank.toLocaleString()}` : `*No global rank*`) : `*Not linked*`}
+                        - ${countryCodeToFlag(osuProfile.linked ? osuProfile.country_code : undefined)} *country score:* ${osuProfile.linked ? (osuProfile.statistics.country_rank ? `#\u200B${osuProfile.statistics.country_rank.toLocaleString()}` : `*No country rank*`) : `*Not linked*`}
+                        `.split('\n').map(x => x.trim()).join('\n')
             },
             "accessory": {
                 "type": "image",
@@ -79,7 +116,7 @@ export default async function ProfileCommand(ctx: SlackCommandMiddlewareArgs & A
         })
     } else if (arg) {
         // osu! user
-        const user = await sendGET<{ id: number, username: string, avatar_url: string }>(`/users/${arg}?key=username`);
+        const user = await sendGET<OsuProfile>(`/users/${arg}?key=username`);
 
         if (user) {
             const userLink = await sql<{ osu_id: string, slack_id: string }[]>`SELECT * FROM users WHERE osu_id = ${user.id}`;
