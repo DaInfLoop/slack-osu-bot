@@ -1,5 +1,5 @@
 # osu! bot V2
-A rewrite of [osu! bot](https://github.com/DaInfLoop/osu-leaderboard) for the Hack Club slack.
+A rewrite of osu! bot for the Hack Club slack.
 
 ## Features
 ### 1. Hack Club Account Linking
