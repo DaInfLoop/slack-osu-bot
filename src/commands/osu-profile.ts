@@ -49,7 +49,7 @@ async function generateProfile(opts: { slackProfile?: UsersInfoResponse['user'],
 
         else if (opts.osuUsername) return {
             linked: true,
-            ...(await sendGET<OsuProfile>(`/users/${opts.osuUsername}?key=username`))
+            ...(await sendGET<OsuProfile>(`/users/@${opts.osuUsername}?key=username`))
         }
 
         else return {
@@ -116,9 +116,9 @@ export default async function ProfileCommand(ctx: SlackCommandMiddlewareArgs & A
         })
     } else if (arg) {
         // osu! user
-        const user = await sendGET<OsuProfile>(`/users/${arg}?key=username`);
+        const user = await sendGET<OsuProfile & { error: any }>(`/users/@${arg}?key=username`);
 
-        if (user) {
+        if (user && user.error !== undefined) {
             const userLink = await sql<{ osu_id: string, slack_id: string }[]>`SELECT * FROM users WHERE osu_id = ${user.id}`;
 
             if (userLink[0]) {
