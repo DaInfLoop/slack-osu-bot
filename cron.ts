@@ -62,60 +62,32 @@ export const multiLobbyTask = cron.createTask('*/5 * * * *', async (ctx) => {
 
                     const callUsers = callInfo.call.users!;
 
-                    const callUsersMapped = await Promise.all(callUsers.map(async function (callUser) {
-                        if (!callUser.slack_id && callUser.external_id) return { slack_id: undefined, osu_id: callUser.external_id }
-
-                        const userLink = await sql<{ osu_id: string, slack_id: string }[]>`SELECT * FROM users WHERE slack_id = ${callUser.slack_id!}`;
-
-                        if (userLink[0]) {
-                            return userLink[0]
-                        }
-                    }));
-
-                    const callUsersMappedToOsuIds = callUsersMapped.map(x => x?.osu_id);
+                    const callUsersIds = callUsers.map(x => x.external_id!);
 
                     const osuRoomIds = osuRoom.recent_participants.map(user => user.id.toString());
 
-                    if (!arraysEqualUnordered(callUsersMappedToOsuIds, osuRoomIds)) {
-                        const removed = Array.from(new Set(callUsersMappedToOsuIds.filter(u => !osuRoomIds.includes(u!))));
-                        const added = Array.from(new Set(osuRoomIds.filter(u => !callUsersMappedToOsuIds.includes(u))));
+                    if (!arraysEqualUnordered(callUsersIds, osuRoomIds)) {
+                        const removed = Array.from(new Set(callUsersIds.filter(u => !osuRoomIds.includes(u!))));
+                        const added = Array.from(new Set(osuRoomIds.filter(u => !callUsersIds.includes(u))));
 
                         if (removed.length) {
                             client.calls.participants.remove({
                                 id: room.slack_call_id,
-                                users: removed.map(r => {
-                                    const x = callUsers.find((u) =>
-                                        u.external_id == r || callUsersMapped.some(link =>
-                                            link!.osu_id == r && link!.slack_id == u.slack_id
-                                        )
-                                    )!
-
-                                    return x.slack_id ? ({ slack_id: x.slack_id }) : ({
-                                        external_id: x.external_id!.toString(),
-                                        display_name: x.display_name!,
-                                        avatar_url: x.avatar_url!
-                                    })
-                                })
+                                users: removed.map(r => ({
+                                    external_id: r,
+                                    display_name: callUsers.find(u => u.external_id == r)!.display_name!,
+                                    avatar_url: callUsers.find(u => u.external_id == r)!.avatar_url!,                                    
+                                }))
                             })
                         }
 
                         if (added.length) {
-                            const users = await sql.unsafe<{ osu_id: string, slack_id: string }[]>(`
-                    SELECT 
-                        u.osu_id,
-                        us.slack_id
-                    FROM 
-                        UNNEST(ARRAY${JSON.stringify(added.map(x => x.toString())).replaceAll('"', "'")}) AS u(osu_id)
-                    LEFT JOIN 
-                        users us ON us.osu_id = u.osu_id
-                    `)
-
                             client.calls.participants.add({
                                 id: room.slack_call_id,
-                                users: users.map(x => x.slack_id ? ({ slack_id: x.slack_id }) : ({
-                                    external_id: x.osu_id.toString(),
-                                    display_name: osuRoom.recent_participants.find(user => user.id.toString() == x.osu_id)?.username!,
-                                    avatar_url: osuRoom.recent_participants.find(user => user.id.toString() == x.osu_id)?.avatar_url
+                                users: added.map(a => ({
+                                    external_id: a,
+                                    display_name: osuRoom.recent_participants.find(u => u.id.toString() == a)!.username!,
+                                    avatar_url: osuRoom.recent_participants.find(u => u.id.toString() == a)!.avatar_url!, 
                                 }))
                             })
                         }

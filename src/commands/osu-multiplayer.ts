@@ -41,16 +41,6 @@ export default async function MultiplayerCommand(ctx: SlackCommandMiddlewareArgs
 
     const osuUsers = room.recent_participants
 
-    const users = await sql.unsafe<{ osu_id: string, slack_id: string }[]>(`
-    SELECT 
-        u.osu_id,
-        us.slack_id
-    FROM 
-        UNNEST(ARRAY${JSON.stringify(osuUsers.map(x => x.id.toString())).replaceAll('"', "'")}) AS u(osu_id)
-    LEFT JOIN 
-        users us ON us.osu_id = u.osu_id
-    `)
-
     const call = await ctx.client.calls.add({
         external_unique_id: room.id.toString(),
         join_url: `https://${process.env.NGROK_DOMAIN && process.env.NODE_ENV == 'development' ? process.env.NGROK_DOMAIN : 'osu.rana.hackclub.app'}/multi-lobby-join?id=${room.id}`,
@@ -59,10 +49,10 @@ export default async function MultiplayerCommand(ctx: SlackCommandMiddlewareArgs
         title: room.name,
         created_by: ctx.body.user_id,
         external_display_id: room.id.toString(),
-        users: users.map(x => x.slack_id ? ({ slack_id: x.slack_id }) : ({
-            external_id: x.osu_id.toString(),
-            display_name: osuUsers.find(user => user.id.toString() == x.osu_id)?.username!,
-            avatar_url: osuUsers.find(user => user.id.toString() == x.osu_id)?.avatar_url
+        users: osuUsers.map(x => ({
+            external_id: x.id.toString(),
+            display_name: x.username,
+            avatar_url: x.avatar_url
         }))
     });
 
