@@ -68,8 +68,8 @@ async function generateProfile(opts: { slackProfile?: UsersInfoResponse['user'],
                         *osu! user data*:
                         - *default/favorite ruleset*: ${osuProfile.linked ? { osu: ":osu-standard: osu!standard", taiko: ":osu-taiko: osu!taiko", fruits: ":osu-catch: osu!catch", mania: ":osu-mania: osu!mania"}[osuProfile.playmode] : `Not linked`}
                         - *pp:* ${osuProfile.linked ? Math.floor(osuProfile.statistics.pp).toLocaleString() : `Not linked`}
-                        - *global score:* ${osuProfile.linked ? (osuProfile.statistics.global_rank ? `#\u200B${osuProfile.statistics.global_rank.toLocaleString()}` : `No global rank`) : `Not linked`}
-                        - ${countryCodeToFlag(osuProfile.linked ? osuProfile.country_code : undefined)} *country score:* ${osuProfile.linked ? (osuProfile.statistics.country_rank ? `#\u200B${osuProfile.statistics.country_rank.toLocaleString()}` : `No country rank`) : `Not linked`}
+                        - *global rank:* ${osuProfile.linked ? (osuProfile.statistics.global_rank ? `#\u200B${osuProfile.statistics.global_rank.toLocaleString()}` : `No global rank`) : `Not linked`}
+                        - ${countryCodeToFlag(osuProfile.linked ? osuProfile.country_code : undefined)} *country rank:* ${osuProfile.linked ? (osuProfile.statistics.country_rank ? `#\u200B${osuProfile.statistics.country_rank.toLocaleString()}` : `No country rank`) : `Not linked`}
                         `.split('\n').map(x => x.trim()).join('\n')
             },
             "accessory": {
