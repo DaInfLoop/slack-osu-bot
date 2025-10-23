@@ -63,13 +63,13 @@ async function generateProfile(opts: { slackProfile?: UsersInfoResponse['user'],
             "text": {
                 "type": "mrkdwn",
                 "text": `*Slack Username*: ${opts.slackProfile ? `<https://my.slack.com/team/${opts.slackProfile.id}|${opts.slackProfile.profile!.display_name_normalized}>` : `*Not linked*`}
-                        *osu! username:* ${osuProfile.linked ? `<https://osu.ppy.sh/users/${osuProfile.id}|${osuProfile.username}` : `*Not linked*`}>
+                        *osu! username:* ${osuProfile.linked ? `<https://osu.ppy.sh/users/${osuProfile.id}|${osuProfile.username}>` : `*Not linked*`}
                         
                         *osu! user data*:
-                        - *default/favorite ruleset*: ${osuProfile.linked ? { osu: ":osu-standard: osu!standard", taiko: ":osu-taiko: osu!taiko", fruits: ":osu-catch: osu!catch", mania: ":osu-mania: osu!mania"}[osuProfile.playmode] : `*Not linked*`}
-                        - *pp:* ${osuProfile.linked ? Math.floor(osuProfile.statistics.pp).toLocaleString() : `*Not linked*`}
-                        - *global score:* ${osuProfile.linked ? (osuProfile.statistics.global_rank ? `#\u200B${osuProfile.statistics.global_rank.toLocaleString()}` : `*No global rank*`) : `*Not linked*`}
-                        - ${countryCodeToFlag(osuProfile.linked ? osuProfile.country_code : undefined)} *country score:* ${osuProfile.linked ? (osuProfile.statistics.country_rank ? `#\u200B${osuProfile.statistics.country_rank.toLocaleString()}` : `*No country rank*`) : `*Not linked*`}
+                        - *default/favorite ruleset*: ${osuProfile.linked ? { osu: ":osu-standard: osu!standard", taiko: ":osu-taiko: osu!taiko", fruits: ":osu-catch: osu!catch", mania: ":osu-mania: osu!mania"}[osuProfile.playmode] : `Not linked`}
+                        - *pp:* ${osuProfile.linked ? Math.floor(osuProfile.statistics.pp).toLocaleString() : `Not linked`}
+                        - *global score:* ${osuProfile.linked ? (osuProfile.statistics.global_rank ? `#\u200B${osuProfile.statistics.global_rank.toLocaleString()}` : `No global rank`) : `Not linked`}
+                        - ${countryCodeToFlag(osuProfile.linked ? osuProfile.country_code : undefined)} *country score:* ${osuProfile.linked ? (osuProfile.statistics.country_rank ? `#\u200B${osuProfile.statistics.country_rank.toLocaleString()}` : `No country rank`) : `Not linked`}
                         `.split('\n').map(x => x.trim()).join('\n')
             },
             "accessory": {
