@@ -118,7 +118,7 @@ export default async function ProfileCommand(ctx: SlackCommandMiddlewareArgs & A
         // osu! user
         const user = await sendGET<OsuProfile & { error: any }>(`/users/@${arg}?key=username`);
 
-        if (user && user.error !== undefined) {
+        if (user && user.error == undefined) {
             const userLink = await sql<{ osu_id: string, slack_id: string }[]>`SELECT * FROM users WHERE osu_id = ${user.id}`;
 
             if (userLink[0]) {
