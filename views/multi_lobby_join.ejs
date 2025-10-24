@@ -8,19 +8,23 @@
 </head>
 
 <body class="w-full h-full">
-<div class="flex items-center justify-center h-full bg-white dark:bg-gray-950">
-  <div class="rounded-xl row-start-3 flex max-w-lg flex-col bg-gray-100 p-2 dark:bg-white/10">
-    <div class="rounded-xl bg-white p-10 text-sm/7 text-gray-700 dark:bg-gray-950 dark:text-gray-300">
-      <div class="space-y-6">
-        <h1 class="text-lg font-bold">You're joining an osu! multiplayer lobby.</h1>
+    <div class="flex items-center justify-center h-full bg-white dark:bg-gray-950">
+        <div class="rounded-xl row-start-3 flex max-w-lg flex-col bg-gray-100 p-2 dark:bg-white/10">
+            <div class="rounded-xl bg-white p-10 text-sm/7 text-gray-700 dark:bg-gray-950 dark:text-gray-300">
+                <div class="space-y-6">
+                    <h1 class="text-lg font-bold">You're joining an osu! multiplayer lobby.</h1>
 
-        <p>The room ID is <strong><%= code %></strong>.</p>
+                    <p>The room ID is <strong>
+                            <%= code %>
+                        </strong>.</p>
 
-        <a href="osu://room/<%= code %>" class="text-center font-semibold block px-5 py-2.5 bg-pink-400 text-white font-medium rounded-xl">Join Lobby</a>
-      </div>
+                    <a href="osu://room/<%= code %>"
+                        class="text-center font-semibold block px-5 py-2.5 bg-pink-400 text-white font-medium rounded-xl">Join
+                        Lobby</a>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
-</div>
 </body>
 
 </html>
