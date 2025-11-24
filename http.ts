@@ -7,9 +7,7 @@ const md5 = (str: string) => createHash('md5').update(str).digest('hex')
 
 const states = new Map();
 
-// This uses the IDV staging instance. For when it's put into production, this will change :D
-const HCA_URL = "hca.dinosaurbbq.org"
-// const HCA_URL = "localhost:12345"
+const HCA_URL = "identity.hackclub.com"
 
 export default function (express: Application, app: IRouter) {
     express.set('view engine', 'ejs')
