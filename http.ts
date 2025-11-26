@@ -7,7 +7,7 @@ const md5 = (str: string) => createHash('md5').update(str).digest('hex')
 
 const states = new Map();
 
-const HCA_URL = "identity.hackclub.com"
+const HCA_URL = "account.hackclub.com"
 
 export default function (express: Application, app: IRouter) {
     express.set('view engine', 'ejs')
