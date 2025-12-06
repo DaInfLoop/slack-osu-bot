@@ -1,0 +1,252 @@
+<!-- <!doctype html>
+<html class="w-full h-full">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+        *[title] {
+            text-decoration: underline dotted;
+            cursor: help;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        button {
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body class="w-full h-full">
+    <div class="flex items-center justify-center h-full bg-white dark:bg-gray-950">
+        <div class="rounded-xl row-start-3 flex min-w-[50%] flex-col bg-gray-100 p-2 dark:bg-white/10">
+            <div class="rounded-xl bg-white p-10 text-sm/7 text-gray-700 dark:bg-gray-950 dark:text-gray-300">
+                <div class="w-full space-y-6">
+                    <h1 class="text-xl font-bold">Leaderboard for <%= default_stylized %>
+                    </h1>
+
+                    <div class="flex flex-col gap-2">
+                        <p class="text-sm">Change leaderboard:</p>
+                        <div id="gamemode-switchers" class="min-w-full flex flex-row justify-between gap-4">
+                            <button
+                                class="text-center w-full font-semibold inline px-5 py-2.5 bg-pink-400 hover:bg-pink-300 text-white font-medium rounded-xl"
+                                data-name="osu">osu!standard</button>
+
+                            <button
+                                class="text-center w-full font-semibold inline px-5 py-2.5 bg-pink-400 hover:bg-pink-300 text-white font-medium rounded-xl"
+                                data-name="taiko">osu!taiko</button>
+
+                            <button
+                                class="text-center w-full font-semibold inline px-5 py-2.5 bg-pink-400 hover:bg-pink-300 text-white font-medium rounded-xl"
+                                data-name="fruits">osu!catch</button>
+
+                            <button
+                                class="text-center w-full font-semibold inline px-5 py-2.5 bg-pink-400 hover:bg-pink-300 text-white font-medium rounded-xl"
+                                data-name="mania">osu!mania</button>
+                        </div>
+                    </div>
+
+                    <table class="w-full divide-y divide-gray-200 dark:divide-gray-700">
+                        <thead class="bg-gray-50 dark:bg-gray-800">
+                            <td class="px-3 py-2">#</td>
+                            <td class="px-3 py-2">Slack user & osu! profile</td>
+                            <td class="px-3 py-2">PP</td>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                            <% lb.sort((a, b)=> b.scores[default_mode] - a.scores[default_mode]).slice(0,
+                                10).forEach((player, index) => { %>
+                                <tr>
+                                    <td class="px-3 py-2">
+                                        <%= index + 1 %>
+                                    </td>
+                                    <td class="px-3 py-2 flex flex-row gap-2">
+                                        <div class="flex flex-row gap-4"><img class="w-8 h-8 rounded-full"
+                                                src="<%= player.slackAvatar %>" alt="avatar">
+                                            <span>
+                                                <%= player.slackDisplayName %>
+                                            </span>
+                                        </div>
+                                        <span>(<a class="text-pink-300"
+                                                href="https://osu.ppy.sh/users/<%= player.osuId %>">view osu!
+                                                profile</a>)</span>
+                                    </td>
+                                    <td class="px-3 py-2">
+                                        <%= player.scores[default_mode].toLocaleString() %>
+                                    </td>
+                                </tr>
+                                <% }) %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html> -->
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>account linking | osu! slack</title>
+    <%- include('partials/head') %>
+    <script type="application/json" id="initial-leaderboard">
+        <%- JSON.stringify(lb) %>
+    </script>
+
+        <script type="module" defer>
+            const gamemodeSwitchers = document.querySelector('#gamemode-switchers');
+            const tableBody = document.querySelector("tbody");
+            let leaderboard = JSON.parse(document.querySelector('#initial-leaderboard').textContent);
+            let currentMode = "<%= default_mode %>";
+
+            const emptyTr = document.createElement('tr');
+            const emptyTd = document.createElement('td');
+            emptyTd.style.userSelect = 'none';
+            emptyTd.innerHTML = "&nbsp;"
+            emptyTr.append(emptyTd.cloneNode(true), emptyTd.cloneNode(true), emptyTd.cloneNode(true));
+
+            function refreshLeaderboard(mode) {
+                if (currentMode == mode) return;
+
+                currentMode = mode;
+
+                const fragment = document.createDocumentFragment();
+
+                fragment.append(emptyTr)
+
+                leaderboard.sort((a, b) => b.scores[mode] - a.scores[mode]).forEach((player, index) => {
+                    const tr = document.createElement('tr');
+
+                    const placement = document.createElement('td');
+                    placement.textContent = `#${index + 1}`;
+
+                    const user = document.createElement('td');
+                    user.setAttribute('style', 'display: flex; flex-direction: row; gap: 8px; align-items: center;');
+
+                    const userName = document.createElement('div');
+                    userName.setAttribute('style', 'display: flex; flex-direction: row; gap: 16px; align-items: center;')
+
+                    const userFlag = document.createElement('img');
+                    userFlag.setAttribute('width', '36px')
+                    userFlag.src = `https://twemoji.maxcdn.com/v/latest/72x72/${player.flag}.png`
+
+                    const userLink = document.createElement('span');
+
+                    const osuProfileLink = document.createElement('a')
+                    osuProfileLink.href = "https://osu.ppy.sh/users/" + player.osuId
+                    osuProfileLink.textContent = "view osu! profile"
+
+                    userLink.append("(", osuProfileLink, ")")
+                    userName.append(userFlag, player.slackDisplayName);
+                    user.append(userName, userLink)
+
+                    const score = document.createElement('td');
+                    score.textContent = player.scores[mode].toLocaleString();
+
+                    tr.append(placement, user, score)
+
+                    fragment.appendChild(tr)
+                })
+
+                tableBody.replaceChildren(fragment)
+            }
+
+            for (const button of gamemodeSwitchers.children) {
+                button.addEventListener('click', (event) => {
+                    const name = button.getAttribute('data-name');
+
+                    document.querySelector('[selected]').removeAttribute('selected');
+
+                    button.setAttribute('selected', '');
+
+                    const params = new URLSearchParams(window.location.search);
+
+                    params.set('mode', name);
+
+                    window.history.replaceState({}, '', `${window.location.pathname}?${params.toString()}`)
+
+                    refreshLeaderboard(name);
+                })
+            }
+
+            window.addEventListener('popstate', (event) => {
+                const params = new URLSearchParams(window.location.search);
+
+                document.querySelector('[selected]').removeAttribute('selected');
+
+                document.querySelector(`[data-name=${params.get('mode') || 'osu'}]`).setAttribute('selected', '');
+
+                refreshLeaderboard(params.get('mode') || 'osu')
+            })
+        </script>
+</head>
+
+<body>
+    <div class="container"
+        style="display: flex; align-items: center; flex-direction: column; gap: 48px; height: 90%; width: 75%; padding: 64px;">
+        <!-- <img src="/static/icons/check-circle.png" width="96px" /> -->
+
+        <div style="display: flex; justify-content: space-between; width: 100%; align-items: center;">
+            <div
+                style="display: flex; gap: 24px; flex-direction: row; align-items: center; justify-content: flex-start; width: 100%;">
+                <img src="/static/icons/ranking.png" width="48px" />
+                <span style="font-size: 28px;">rankings</span>
+            </div>
+
+            <div style="display: flex; gap: 16px;" id="gamemode-switchers">
+                <div title="osu!" class="ruleset-std act-as-button" data-name="osu" <%- default_mode=='osu' ? 'selected' : '' %> ></div>
+                <div title="osu!taiko" class="ruleset-taiko act-as-button" data-name="taiko" <%- default_mode=='taiko' ? 'selected' : '' %> ></div>
+                <div title="osu!catch" class="ruleset-ctb act-as-button" data-name="fruits" <%- default_mode=='fruits' ? 'selected' : '' %> ></div>
+                <div title="osu!mania" class="ruleset-mania act-as-button" data-name="mania" <%- default_mode=='mania' ? 'selected' : '' %>></div>
+            </div>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td>performance</td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr style="user-select: none;">
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                </tr>
+                <% lb.sort((a, b)=> b.scores[default_mode] - a.scores[default_mode]).slice(0,15).forEach((player, index) => { %>
+                    <tr>
+                        <td>
+                            #<%= index + 1 %>
+                        </td>
+
+                        <td style="display: flex; flex-direction: row; gap: 8px; align-items: center;">
+                            <div style="display: flex; flex-direction: row; gap: 16px; align-items: center;" class="flex flex-row gap-4">
+                                <img src="https://twemoji.maxcdn.com/v/latest/72x72/<%= player.flag %>.png" width="36px" />
+                                <span>
+                                    <%= player.slackDisplayName %>
+                                </span>
+                            </div>
+                            <span>(<a class="text-pink-300"
+                                    href="https://osu.ppy.sh/users/<%= player.osuId %>">view osu!
+                                    profile</a>)</span>
+                        </td>
+                        <td>
+                            <%= player.scores[default_mode].toLocaleString() %>
+                        </td>
+                    </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    </div>
+</body>
+<%- include('partials/buttonScript') %>
+
+</html>

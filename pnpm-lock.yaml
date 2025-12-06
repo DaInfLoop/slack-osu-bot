@@ -23,6 +23,9 @@ importers:
       ejs:
         specifier: ^3.1.10
         version: 3.1.10
+      express:
+        specifier: ^5.2.1
+        version: 5.2.1
       node-cron:
         specifier: ^4.2.1
         version: 4.2.1
@@ -30,6 +33,9 @@ importers:
         specifier: ^3.4.7
         version: 3.4.7
     devDependencies:
+      '@ngrok/ngrok':
+        specifier: ^1.6.0
+        version: 1.6.0
       '@types/body-parser':
         specifier: ^1.19.6
         version: 1.19.6
@@ -198,6 +204,87 @@ packages:
     cpu: [x64]
     os: [win32]
 
+  '@ngrok/ngrok-android-arm64@1.6.0':
+    resolution: {integrity: sha512-gOfVVjYq7ruPMgH108j99uaBUkwD1DxDpnk+RufQHzxRKL72MZad7QfaRwc1v8iRMyOh3EKYYvU2y8HSXDbSkA==}
+    engines: {node: '>= 10'}
+    cpu: [arm64]
+    os: [android]
+
+  '@ngrok/ngrok-darwin-arm64@1.6.0':
+    resolution: {integrity: sha512-YdKlEkz0PHHnoy2UlEH2XMrupetmT6K6bLrF+MFWrKYKpIbOuGV4HcVioh1iu0NTmn7xJwrAbo/Mwx2E95/qdg==}
+    engines: {node: '>= 10'}
+    cpu: [arm64]
+    os: [darwin]
+
+  '@ngrok/ngrok-darwin-universal@1.6.0':
+    resolution: {integrity: sha512-yiUCkg10+vUKgvkD2rAZHlzvZmINUNF7mna7iL+ydh4pOx6jamSwDQ2QRseVAyxC9eZVy/rKFYLVnz2Ci+0D9w==}
+    engines: {node: '>= 10'}
+    os: [darwin]
+
+  '@ngrok/ngrok-darwin-x64@1.6.0':
+    resolution: {integrity: sha512-a6LbwODDDCRpriILe+1lq+zuIjGbj+pR1A0KThTP8riVTQ538DMqR09kv5Oz7ZqcclS/IK+3ZLKkxHuPX9ob3g==}
+    engines: {node: '>= 10'}
+    cpu: [x64]
+    os: [darwin]
+
+  '@ngrok/ngrok-freebsd-x64@1.6.0':
+    resolution: {integrity: sha512-t77ayWr0zPrW75DstzvoE6Hwj7h1mpQSFKQ3I0B3iC9o7XZhcNkwFpX8QLbmQNkeHxz5UhlBtzOYPdzDJY+3uw==}
+    engines: {node: '>= 10'}
+    cpu: [x64]
+    os: [freebsd]
+
+  '@ngrok/ngrok-linux-arm-gnueabihf@1.6.0':
+    resolution: {integrity: sha512-NBCJnPAbl44Ua3dpO+kOkyz4cGGLu2FiDcEHBES7OARiSscoui+DyNPLe5auZFjag5/0B3ZNiDgCcdRBAi+KNQ==}
+    engines: {node: '>= 10'}
+    cpu: [arm]
+    os: [linux]
+
+  '@ngrok/ngrok-linux-arm64-gnu@1.6.0':
+    resolution: {integrity: sha512-i65WIaeImO2/oyTfwUAVW1j/poLMzX/PAYsDRLXOac6/1DV6kIQX1kmr+CEs6NtmKgD76QiApbqtksd9MDlncg==}
+    engines: {node: '>= 10'}
+    cpu: [arm64]
+    os: [linux]
+
+  '@ngrok/ngrok-linux-arm64-musl@1.6.0':
+    resolution: {integrity: sha512-7osqE43Pl6HiTeLZSEnSTtgbNQ1zqYovYjZ7lGgeKJHlgWXE6RvE7qhdjDw17ebUuT0IS8JPGZFnlyF6J0UKPQ==}
+    engines: {node: '>= 10'}
+    cpu: [arm64]
+    os: [linux]
+
+  '@ngrok/ngrok-linux-x64-gnu@1.6.0':
+    resolution: {integrity: sha512-jP3enLStnTGTKLBXqctVt3wIVvGLP/BkLKYuXwrU1EqchtvDcsAhpspeUeX23SAtLXUgbX9vN1B6IvsAxWcyxw==}
+    engines: {node: '>= 10'}
+    cpu: [x64]
+    os: [linux]
+
+  '@ngrok/ngrok-linux-x64-musl@1.6.0':
+    resolution: {integrity: sha512-hrBrXCofgmY9pc36N0nfDS+bfomu5hOqt0N5IQkL4n0UaQcl48tKddIex2eR+mU3QBYh6p1XKxAwyAVjwplD2w==}
+    engines: {node: '>= 10'}
+    cpu: [x64]
+    os: [linux]
+
+  '@ngrok/ngrok-win32-arm64-msvc@1.6.0':
+    resolution: {integrity: sha512-EXJXFaXh/cNRaTqs02EmysILtcSImFWwC98mjG6PU5MEG+gqNz8AddnqFytY0RRxkR9SxwnC+7QAV3qYOSU6kA==}
+    engines: {node: '>= 10'}
+    cpu: [arm64]
+    os: [win32]
+
+  '@ngrok/ngrok-win32-ia32-msvc@1.6.0':
+    resolution: {integrity: sha512-R+5WB6ONT4ynHFusxRw8kbXx2SBYftl6XUiNQNmwwCdwdNO7fPzdwhbmbzgfCEjQrYQrXD1vs5J+zJJeSaAicw==}
+    engines: {node: '>= 10'}
+    cpu: [ia32]
+    os: [win32]
+
+  '@ngrok/ngrok-win32-x64-msvc@1.6.0':
+    resolution: {integrity: sha512-4QViW0GSPsjmghYPExO0Jt9DtIybK23MXPP0BltOuoFP0iyA15vb03QXAI4223zlSLWSWYnOx+qnCuzV1qT0lQ==}
+    engines: {node: '>= 10'}
+    cpu: [x64]
+    os: [win32]
+
+  '@ngrok/ngrok@1.6.0':
+    resolution: {integrity: sha512-TWC6nh4Kl16HjhG/bVhpYNP5UIyJc9oZetCrnO4r5+gq95eIxZKoLXzuAyC0gF/J+NEY3c1euFAET5Sn9wOWaw==}
+    engines: {node: '>= 10'}
+
   '@slack/bolt@4.4.0':
     resolution: {integrity: sha512-FjGl1+hUo0w6ZSP2v3ZyjEkpGnA2t83Kz/Et2aEtIe8rRxrHd8R9CKShpd7BesuIcvqaz2eVe33YiKGohOiMKw==}
     engines: {node: '>=18', npm: '>=8.6.0'}
@@ -296,6 +383,10 @@ packages:
     resolution: {integrity: sha512-02qvAaxv8tp7fBa/mw1ga98OGm+eCbqzJOKoRt70sLmfEEi+jyBYVTDGfCL/k06/4EMk/z01gCe7HoCH/f2LTg==}
     engines: {node: '>=18'}
 
+  body-parser@2.2.1:
+    resolution: {integrity: sha512-nfDwkulwiZYQIGwxdy0RUmowMhKcFVcYXUU7m4QlKYim1rUtg83xm2yjZ40QjDuc291AJjjeSc9b++AWHSgSHw==}
+    engines: {node: '>=18'}
+
   brace-expansion@2.0.2:
     resolution: {integrity: sha512-Jt0vHyM+jmUBqojB7E1NIYadt0vI0Qxjxd2TErW94wDz+E2LAm5vKMXXwg6ZZBTHPuUlDgQHKXvjGBdfcF1ZDQ==}
 
@@ -336,6 +427,15 @@ packages:
 
   debug@4.4.1:
     resolution: {integrity: sha512-KcKCqiftBJcZr++7ykoDIEwSa3XWowTfNPo92BYxjXiyYEVrUQh2aLyhxBCwww+heortUFxEJYcRzosstTEBYQ==}
+    engines: {node: '>=6.0'}
+    peerDependencies:
+      supports-color: '*'
+    peerDependenciesMeta:
+      supports-color:
+        optional: true
+
+  debug@4.4.3:
+    resolution: {integrity: sha512-RGwwWnwQvkVfavKVt22FGLw+xYSdzARwm0ru6DhTVA3umU5hZc28V3kO4stgYryrTlLpuvgI9GiijltAjNbcqA==}
     engines: {node: '>=6.0'}
     peerDependencies:
       supports-color: '*'
@@ -408,8 +508,8 @@ packages:
   eventemitter3@5.0.1:
     resolution: {integrity: sha512-GWkBvjiSZK87ELrYOSESUYeVIc9mvLLf/nXalMOS5dYrgZq9o5OVkbZAVM06CVxYsCwH9BDZFPlQTlPA1j4ahA==}
 
-  express@5.1.0:
-    resolution: {integrity: sha512-DT9ck5YIRU+8GYzzU5kT3eHGA5iL+1Zd0EutOmTE9Dtk+Tvuzd23VBU+ec7HPNSTxXYO55gPV/hq4pSBJDjFpA==}
+  express@5.2.1:
+    resolution: {integrity: sha512-hIS4idWWai69NezIdRt2xFVofaF4j+6INOpJlVOLDO8zXGpUVEVzIYk12UUi2JzjEzWL3IOAxcTubgz9Po0yXw==}
     engines: {node: '>= 18'}
 
   filelist@1.0.4:
@@ -483,8 +583,16 @@ packages:
     resolution: {integrity: sha512-FtwrG/euBzaEjYeRqOgly7G0qviiXoJWnvEH2Z1plBdXgbyjv34pHTSb9zoeHMyDy33+DWy5Wt9Wo+TURtOYSQ==}
     engines: {node: '>= 0.8'}
 
+  http-errors@2.0.1:
+    resolution: {integrity: sha512-4FbRdAX+bSdmo4AUFuS0WNiPz8NgFt+r8ThgNWmlrjQjt1Q7ZR9+zTlce2859x4KSXrwIsaeTqDoKQmtP8pLmQ==}
+    engines: {node: '>= 0.8'}
+
   iconv-lite@0.6.3:
     resolution: {integrity: sha512-4fCk79wshMdzMp2rH06qWrJE4iolqLhCUH+OiuIgU++RB0+94NlDL81atO7GX55uUKueo0txHNtvEyI6D7WdMw==}
+    engines: {node: '>=0.10.0'}
+
+  iconv-lite@0.7.0:
+    resolution: {integrity: sha512-cf6L2Ds3h57VVmkZe+Pn+5APsT7FpqJtEhhieDCvrE2MK5Qk9MyffgQyuxQTm6BChfeZNtcOLHp9IcWRVcIcBQ==}
     engines: {node: '>=0.10.0'}
 
   inherits@2.0.4:
@@ -644,6 +752,10 @@ packages:
     resolution: {integrity: sha512-RmkhL8CAyCRPXCE28MMH0z2PNWQBNk2Q09ZdxM9IOOXwxwZbN+qbWaatPkdkWIKL2ZVDImrN/pK5HTRz2PcS4g==}
     engines: {node: '>= 0.8'}
 
+  raw-body@3.0.2:
+    resolution: {integrity: sha512-K5zQjDllxWkf7Z5xJdV0/B0WTNqx6vxG70zJE4N0kBs4LovmEYWJzQGxC9bS9RAKu3bgM40lrd5zoLJ12MQ5BA==}
+    engines: {node: '>= 0.10'}
+
   resolve-pkg-maps@1.0.0:
     resolution: {integrity: sha512-seS2Tj26TBVOC2NIc2rOe2y2ZO7efxITtLZcGSOnHHNOQ7CkiUBfw0Iw2ck6xkIhPwLhKNLS8BO+hEpngQlqzw==}
 
@@ -695,6 +807,10 @@ packages:
 
   statuses@2.0.1:
     resolution: {integrity: sha512-RwNA9Z/7PrK06rYLIzFMlaF+l73iwpzsqRIFgbMLbTcLD6cOao82TaWefPXQvB2fOC4AjuYSEndS7N/mTCbkdQ==}
+    engines: {node: '>= 0.8'}
+
+  statuses@2.0.2:
+    resolution: {integrity: sha512-DvEy55V3DB7uknRo+4iOGT5fP1slR8wQohVdknigZPMpMstaKJQWhwiYBACJE3Ul2pTnATihhBYnRhZQHGBiRw==}
     engines: {node: '>= 0.8'}
 
   toidentifier@1.0.1:
@@ -822,6 +938,61 @@ snapshots:
   '@esbuild/win32-x64@0.25.5':
     optional: true
 
+  '@ngrok/ngrok-android-arm64@1.6.0':
+    optional: true
+
+  '@ngrok/ngrok-darwin-arm64@1.6.0':
+    optional: true
+
+  '@ngrok/ngrok-darwin-universal@1.6.0':
+    optional: true
+
+  '@ngrok/ngrok-darwin-x64@1.6.0':
+    optional: true
+
+  '@ngrok/ngrok-freebsd-x64@1.6.0':
+    optional: true
+
+  '@ngrok/ngrok-linux-arm-gnueabihf@1.6.0':
+    optional: true
+
+  '@ngrok/ngrok-linux-arm64-gnu@1.6.0':
+    optional: true
+
+  '@ngrok/ngrok-linux-arm64-musl@1.6.0':
+    optional: true
+
+  '@ngrok/ngrok-linux-x64-gnu@1.6.0':
+    optional: true
+
+  '@ngrok/ngrok-linux-x64-musl@1.6.0':
+    optional: true
+
+  '@ngrok/ngrok-win32-arm64-msvc@1.6.0':
+    optional: true
+
+  '@ngrok/ngrok-win32-ia32-msvc@1.6.0':
+    optional: true
+
+  '@ngrok/ngrok-win32-x64-msvc@1.6.0':
+    optional: true
+
+  '@ngrok/ngrok@1.6.0':
+    optionalDependencies:
+      '@ngrok/ngrok-android-arm64': 1.6.0
+      '@ngrok/ngrok-darwin-arm64': 1.6.0
+      '@ngrok/ngrok-darwin-universal': 1.6.0
+      '@ngrok/ngrok-darwin-x64': 1.6.0
+      '@ngrok/ngrok-freebsd-x64': 1.6.0
+      '@ngrok/ngrok-linux-arm-gnueabihf': 1.6.0
+      '@ngrok/ngrok-linux-arm64-gnu': 1.6.0
+      '@ngrok/ngrok-linux-arm64-musl': 1.6.0
+      '@ngrok/ngrok-linux-x64-gnu': 1.6.0
+      '@ngrok/ngrok-linux-x64-musl': 1.6.0
+      '@ngrok/ngrok-win32-arm64-msvc': 1.6.0
+      '@ngrok/ngrok-win32-ia32-msvc': 1.6.0
+      '@ngrok/ngrok-win32-x64-msvc': 1.6.0
+
   '@slack/bolt@4.4.0(@types/express@5.0.3)':
     dependencies:
       '@slack/logger': 4.0.0
@@ -831,7 +1002,7 @@ snapshots:
       '@slack/web-api': 7.11.0
       '@types/express': 5.0.3
       axios: 1.9.0
-      express: 5.1.0
+      express: 5.2.1
       path-to-regexp: 8.2.0
       raw-body: 3.0.0
       tsscmp: 1.0.6
@@ -989,6 +1160,20 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  body-parser@2.2.1:
+    dependencies:
+      bytes: 3.1.2
+      content-type: 1.0.5
+      debug: 4.4.3
+      http-errors: 2.0.0
+      iconv-lite: 0.7.0
+      on-finished: 2.4.1
+      qs: 6.14.0
+      raw-body: 3.0.2
+      type-is: 2.0.1
+    transitivePeerDependencies:
+      - supports-color
+
   brace-expansion@2.0.2:
     dependencies:
       balanced-match: 1.0.2
@@ -1022,6 +1207,10 @@ snapshots:
   cookie@0.7.2: {}
 
   debug@4.4.1:
+    dependencies:
+      ms: 2.1.3
+
+  debug@4.4.3:
     dependencies:
       ms: 2.1.3
 
@@ -1100,15 +1289,16 @@ snapshots:
 
   eventemitter3@5.0.1: {}
 
-  express@5.1.0:
+  express@5.2.1:
     dependencies:
       accepts: 2.0.0
-      body-parser: 2.2.0
+      body-parser: 2.2.1
       content-disposition: 1.0.0
       content-type: 1.0.5
       cookie: 0.7.2
       cookie-signature: 1.2.2
       debug: 4.4.1
+      depd: 2.0.0
       encodeurl: 2.0.0
       escape-html: 1.0.3
       etag: 1.8.1
@@ -1215,7 +1405,19 @@ snapshots:
       statuses: 2.0.1
       toidentifier: 1.0.1
 
+  http-errors@2.0.1:
+    dependencies:
+      depd: 2.0.0
+      inherits: 2.0.4
+      setprototypeof: 1.2.0
+      statuses: 2.0.2
+      toidentifier: 1.0.1
+
   iconv-lite@0.6.3:
+    dependencies:
+      safer-buffer: 2.1.2
+
+  iconv-lite@0.7.0:
     dependencies:
       safer-buffer: 2.1.2
 
@@ -1355,6 +1557,13 @@ snapshots:
       iconv-lite: 0.6.3
       unpipe: 1.0.0
 
+  raw-body@3.0.2:
+    dependencies:
+      bytes: 3.1.2
+      http-errors: 2.0.1
+      iconv-lite: 0.7.0
+      unpipe: 1.0.0
+
   resolve-pkg-maps@1.0.0: {}
 
   retry@0.13.1: {}
@@ -1431,6 +1640,8 @@ snapshots:
       side-channel-weakmap: 1.0.2
 
   statuses@2.0.1: {}
+
+  statuses@2.0.2: {}
 
   toidentifier@1.0.1: {}
 

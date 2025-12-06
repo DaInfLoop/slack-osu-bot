@@ -1,25 +1,31 @@
-<!doctype html>
-<html class="w-full h-full">
+<!DOCTYPE html>
+<html>
 
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <title>account linking | osu! slack</title>
+    <%- include('partials/head') %>
 </head>
 
-<body class="w-full h-full">
-    <div
-        class="flex items-center justify-center h-full bg-white [--pattern-fg:var(--color-gray-950)]/5 dark:bg-gray-950 dark:[--pattern-fg:var(--color-white)]/10">
-        <div class="rounded-xl row-start-3 flex max-w-lg flex-col bg-gray-100 p-2 dark:bg-white/10">
-            <div class="rounded-xl bg-white p-10 text-sm/7 text-gray-700 dark:bg-gray-950 dark:text-gray-300">
-                <div class="space-y-6">
-                    <h1 class="text-lg font-bold">Your Slack and osu! accounts have been linked :D</h1>
+<body>
+    <div class="container" style="display: flex; align-items: center; flex-direction: column; gap: 48px;">
+        <img src="/static/icons/check-circle.png" width="96px" />
 
-                    <p>You can now return to Slack.</p>
+        <div style="display: flex; gap: 4px; flex-direction: column; align-items: center;">
+            <span style="font-size: 32px;">Your Hack Club and osu! accounts have been linked.</span>
+
+            <p>You can now return to Slack.</p>
+        </div>
+
+        <div style="width: 100%; display: flex; justify-content: center;">
+            <a class="menu-button" tabindex="0" href="https://slack.com/app_redirect?channel=C165V7XT9">
+                <div class="button-bg" style="background: rgb(238, 51, 153)"></div>
+                <div class="button-content">
+                    <div class="button-text">Open Slack</div>
                 </div>
-            </div>
+            </a>
         </div>
     </div>
 </body>
+<%- include('partials/buttonScript') %>
 
 </html>

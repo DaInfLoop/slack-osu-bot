@@ -1,0 +1,32 @@
+<script type="module" defer>
+    const buttonHover = new Audio('/static/sfx/button-hover.wav');
+    buttonHover.volume = .75
+    buttonHover.load()
+
+    const menuButtonSelect = new Audio('/static/sfx/menu-button-select.wav');
+    menuButtonSelect.volume = .75
+    menuButtonSelect.load();
+
+    const regularButtonSelect = new Audio('/static/sfx/button-select.wav');
+    regularButtonSelect.volume = .75
+    regularButtonSelect.load();
+
+    const btns = document.querySelectorAll('.menu-button, .act-as-button');
+
+    for (const btn of btns) {
+        btn.addEventListener('mouseenter', () => {
+            const sfx = buttonHover.cloneNode();
+            sfx.play();
+        })
+
+        btn.addEventListener('click', (e) => {
+            if (btn.hasAttribute('menuBtn')) {
+                const sfx = menuButtonSelect.cloneNode();
+                sfx.play();
+            } else {
+                const sfx = regularButtonSelect.cloneNode()
+                sfx.play()
+            }
+        })
+    }    
+</script>

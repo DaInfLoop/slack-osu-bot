@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>osu! slack</title>
+    <%- include('partials/head') %>
+</head>
+
+<body>
+    <div id="menu">
+        <div class="navbar" id="left-navbar">
+            <a class="menu-button" tabindex="0" href="/leaderboard" menuBtn>
+                <div class="button-bg" style="background: rgb(85, 85, 85)"></div>
+                <div class="button-content">
+                    <div class="button-icon"><img src="/static/icons/settings.png" width="32px"></div>
+                    <div class="button-text">settings</div>
+                </div>
+            </a>
+        </div>
+        <div id="lazer-container">
+            <img id="lazer" src="/static/lazer.png" width="500vw" />
+        </div>
+        <div class="navbar" id="right-navbar">
+            <a class="menu-button" tabindex="0" href="/link" menuBtn>
+                <div class="button-bg" style="background: rgb(102, 68, 204)"></div>
+                <div class="button-content">
+                    <div class="button-icon"><img src="/static/icons/player.png" width="32px"></div>
+                    <div class="button-text">link account</div>
+                </div>
+            </a>
+            <a class="menu-button" tabindex="0" href="/leaderboard" menuBtn>
+                <div class="button-bg" style="background: rgb(238, 170, 0)"></div>
+                <div class="button-content">
+                    <div class="button-icon"><img src="/static/icons/ranking.png" width="32px"></div>
+                    <div class="button-text">leaderboard</div>
+                </div>
+            </a>
+        </div>
+    </div>
+    <div class="small-device-warning">
+        <span>hiya! this website isn't really built for smaller devices.<br>
+            you're welcome to use it, but it looks better on a laptop or pc!</span>
+    </div>
+</body>
+
+<script type="module">
+    // Audios
+    const logoSelect = new Audio('/static/sfx/osu-logo-select.wav');
+    logoSelect.volume = .75
+    logoSelect.load()
+
+    const backToLogo = new Audio('/static/sfx/back-to-logo.wav');
+    backToLogo.volume = .75
+    backToLogo.load();
+
+    const lazerContainer = document.querySelector('#lazer-container');
+    const menu = document.querySelector('#menu');
+    const navbar = document.querySelectorAll('.navbar');
+    const containerOpen = { current: false };
+
+    lazerContainer.addEventListener('click', () => {
+        if (!containerOpen.current) {
+            logoSelect.currentTime = 0;
+            logoSelect.play();
+
+            lazerContainer.style.setProperty('--base-size', .5)
+            lazerContainer.style.transform = 'scale(var(--base-size)) translate(0, 0)';
+
+            for (const n of navbar) n.setAttribute('open', true);
+            menu.setAttribute('open', true)
+            containerOpen.current = true;
+        } else {
+            backToLogo.currentTime = 0;
+            backToLogo.play();
+
+            lazerContainer.style.setProperty('--base-size', 1)
+            lazerContainer.style.transform = 'scale(var(--base-size)) var(--translate-pos)';
+
+            for (const n of navbar) n.setAttribute('open', false);
+            menu.setAttribute('open', false)
+            containerOpen.current = false;
+        }
+    });
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key == "Escape" || e.key == "Esc") {
+            if (containerOpen.current) {
+                backToLogo.currentTime = 0;
+                backToLogo.play();
+
+                lazerContainer.style.transform = 'scale(1) var(--translate-pos)';
+
+                for (const n of navbar) n.setAttribute('open', false);
+                menu.setAttribute('open', false)
+                containerOpen.current = false;
+            }
+        }
+    })
+</script>
+<%- include('partials/buttonScript') %>
+
+</html>

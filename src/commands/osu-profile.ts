@@ -1,26 +1,6 @@
-// live laugh love stackoverflow :D
-function countryCodeToFlag(countryCode?: string) {
-    // Validate the input to be exactly two characters long and all alphabetic
-    if (!countryCode || countryCode.length !== 2 || !/^[a-zA-Z]+$/.test(countryCode)) {
-        return '🏳️'; // White Flag Emoji for unknown or invalid country codes
-    }
-
-    // Convert the country code to uppercase to match the regional indicator symbols
-    const code = countryCode.toUpperCase();
-
-    // Calculate the offset for the regional indicator symbols
-    const offset = 127397;
-
-    // Convert each letter in the country code to its corresponding regional indicator symbol
-    const flag = Array.from(code).map(letter => String.fromCodePoint(letter.charCodeAt(0) + offset)).join('');
-
-    return flag;
-}
-// end stack overflow code
-
 import type { AllMiddlewareArgs, SlackCommandMiddlewareArgs, StringIndexed } from "@slack/bolt";
 import type { Block, KnownBlock, UsersInfoResponse } from "@slack/web-api";
-import { sendGET } from "../../utils";
+import { sendGET, countryCodeToFlag } from "../../utils";
 import sql from "../../postgres";
 
 // Only using the types we need.
@@ -62,7 +42,7 @@ async function generateProfile(opts: { slackProfile?: UsersInfoResponse['user'],
             "type": "section",
             "text": {
                 "type": "mrkdwn",
-                "text": `*Slack Username*: ${opts.slackProfile ? `<https://my.slack.com/team/${opts.slackProfile.id}|${opts.slackProfile.profile!.display_name_normalized}>` : `*Not linked*`}
+                "text": `*Slack Username*: ${opts.slackProfile ? `<https://my.slack.com/team/${opts.slackProfile.id}|${opts.slackProfile.profile!.display_name_normalized || opts.slackProfile.profile!.first_name}>` : `*Not linked*`}
                         *osu! username:* ${osuProfile.linked ? `<https://osu.ppy.sh/users/${osuProfile.id}|${osuProfile.username}>` : `*Not linked*`}
                         
                         *osu! user data*:
