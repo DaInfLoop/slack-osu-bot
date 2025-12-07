@@ -111,7 +111,7 @@ export default function Setup(express: Application, app: IRouter) {
         const lb = await cacheLeaderboard();
 
         if (req.query.mode && ['osu', 'taiko', 'fruits', 'mania'].includes(req.query.mode as 'osu' | 'taiko' | 'fruits' | 'mania')) {
-            res.render('leaderboard', { lb, default_mode: req.query.mode })
+            return res.render('leaderboard', { lb, default_mode: req.query.mode });
         }
 
         res.render('leaderboard', { lb, default_mode: "osu" })

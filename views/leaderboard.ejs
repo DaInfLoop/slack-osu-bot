@@ -1,94 +1,3 @@
-<!-- <!doctype html>
-<html class="w-full h-full">
-
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <style>
-        *[title] {
-            text-decoration: underline dotted;
-            cursor: help;
-        }
-
-        a:hover {
-            text-decoration: underline;
-        }
-
-        button {
-            cursor: pointer;
-        }
-    </style>
-</head>
-
-<body class="w-full h-full">
-    <div class="flex items-center justify-center h-full bg-white dark:bg-gray-950">
-        <div class="rounded-xl row-start-3 flex min-w-[50%] flex-col bg-gray-100 p-2 dark:bg-white/10">
-            <div class="rounded-xl bg-white p-10 text-sm/7 text-gray-700 dark:bg-gray-950 dark:text-gray-300">
-                <div class="w-full space-y-6">
-                    <h1 class="text-xl font-bold">Leaderboard for <%= default_stylized %>
-                    </h1>
-
-                    <div class="flex flex-col gap-2">
-                        <p class="text-sm">Change leaderboard:</p>
-                        <div id="gamemode-switchers" class="min-w-full flex flex-row justify-between gap-4">
-                            <button
-                                class="text-center w-full font-semibold inline px-5 py-2.5 bg-pink-400 hover:bg-pink-300 text-white font-medium rounded-xl"
-                                data-name="osu">osu!standard</button>
-
-                            <button
-                                class="text-center w-full font-semibold inline px-5 py-2.5 bg-pink-400 hover:bg-pink-300 text-white font-medium rounded-xl"
-                                data-name="taiko">osu!taiko</button>
-
-                            <button
-                                class="text-center w-full font-semibold inline px-5 py-2.5 bg-pink-400 hover:bg-pink-300 text-white font-medium rounded-xl"
-                                data-name="fruits">osu!catch</button>
-
-                            <button
-                                class="text-center w-full font-semibold inline px-5 py-2.5 bg-pink-400 hover:bg-pink-300 text-white font-medium rounded-xl"
-                                data-name="mania">osu!mania</button>
-                        </div>
-                    </div>
-
-                    <table class="w-full divide-y divide-gray-200 dark:divide-gray-700">
-                        <thead class="bg-gray-50 dark:bg-gray-800">
-                            <td class="px-3 py-2">#</td>
-                            <td class="px-3 py-2">Slack user & osu! profile</td>
-                            <td class="px-3 py-2">PP</td>
-                        </thead>
-                        <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
-                            <% lb.sort((a, b)=> b.scores[default_mode] - a.scores[default_mode]).slice(0,
-                                10).forEach((player, index) => { %>
-                                <tr>
-                                    <td class="px-3 py-2">
-                                        <%= index + 1 %>
-                                    </td>
-                                    <td class="px-3 py-2 flex flex-row gap-2">
-                                        <div class="flex flex-row gap-4"><img class="w-8 h-8 rounded-full"
-                                                src="<%= player.slackAvatar %>" alt="avatar">
-                                            <span>
-                                                <%= player.slackDisplayName %>
-                                            </span>
-                                        </div>
-                                        <span>(<a class="text-pink-300"
-                                                href="https://osu.ppy.sh/users/<%= player.osuId %>">view osu!
-                                                profile</a>)</span>
-                                    </td>
-                                    <td class="px-3 py-2">
-                                        <%= player.scores[default_mode].toLocaleString() %>
-                                    </td>
-                                </tr>
-                                <% }) %>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-</body>
-
-</html> -->
-
 <!DOCTYPE html>
 <html>
 
@@ -110,6 +19,9 @@
             emptyTd.style.userSelect = 'none';
             emptyTd.innerHTML = "&nbsp;"
             emptyTr.append(emptyTd.cloneNode(true), emptyTd.cloneNode(true), emptyTd.cloneNode(true));
+
+            const mobileSep = emptyTr.cloneNode(true);
+            mobileSep.classList.add('mobile-table-sep');
 
             function refreshLeaderboard(mode) {
                 if (currentMode == mode) return;
@@ -134,16 +46,23 @@
 
                     const userFlag = document.createElement('img');
                     userFlag.setAttribute('width', '36px')
+                    userFlag.classList.add("flag")
                     userFlag.src = `https://twemoji.maxcdn.com/v/latest/72x72/${player.flag}.png`
 
+                    const userAvatar = document.createElement('img');
+                    userAvatar.setAttribute('width', '36px')
+                    userAvatar.classList.add("slack-pfp")
+                    userAvatar.src = player.slackAvatar                    
+
                     const userLink = document.createElement('span');
+                    userLink.classList.add('view-profile');
 
                     const osuProfileLink = document.createElement('a')
                     osuProfileLink.href = "https://osu.ppy.sh/users/" + player.osuId
                     osuProfileLink.textContent = "view osu! profile"
-
+                    
                     userLink.append("(", osuProfileLink, ")")
-                    userName.append(userFlag, player.slackDisplayName);
+                    userName.append(userFlag, userAvatar, player.slackDisplayName);
                     user.append(userName, userLink)
 
                     const score = document.createElement('td');
@@ -151,7 +70,7 @@
 
                     tr.append(placement, user, score)
 
-                    fragment.appendChild(tr)
+                    fragment.append(tr, mobileSep.cloneNode(true))
                 })
 
                 tableBody.replaceChildren(fragment)
@@ -190,9 +109,7 @@
 <body>
     <div class="container"
         style="display: flex; align-items: center; flex-direction: column; gap: 48px; height: 90%; width: 75%; padding: 64px;">
-        <!-- <img src="/static/icons/check-circle.png" width="96px" /> -->
-
-        <div style="display: flex; justify-content: space-between; width: 100%; align-items: center;">
+        <div class="ranking-header" style="display: flex; justify-content: space-between; width: 100%; align-items: center;">
             <div
                 style="display: flex; gap: 24px; flex-direction: row; align-items: center; justify-content: flex-start; width: 100%;">
                 <img src="/static/icons/ranking.png" width="48px" />
@@ -229,12 +146,13 @@
 
                         <td style="display: flex; flex-direction: row; gap: 8px; align-items: center;">
                             <div style="display: flex; flex-direction: row; gap: 16px; align-items: center;" class="flex flex-row gap-4">
-                                <img src="https://twemoji.maxcdn.com/v/latest/72x72/<%= player.flag %>.png" width="36px" />
+                                <img class="flag" src="https://twemoji.maxcdn.com/v/latest/72x72/<%= player.flag %>.png" width="36px" />
+                                <img class="slack-pfp" src="<%= player.slackAvatar %>" width="36px" />
                                 <span>
                                     <%= player.slackDisplayName %>
                                 </span>
                             </div>
-                            <span>(<a class="text-pink-300"
+                            <span class="view-profile">(<a class="text-pink-300"
                                     href="https://osu.ppy.sh/users/<%= player.osuId %>">view osu!
                                     profile</a>)</span>
                         </td>
@@ -242,11 +160,20 @@
                             <%= player.scores[default_mode].toLocaleString() %>
                         </td>
                     </tr>
+                    <tr style="user-select: none;" class="mobile-table-sep">
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                    </tr>                    
                 <% }) %>
             </tbody>
         </table>
     </div>
 </body>
+    <div class="small-device-warning">
+        <span>hiya! this website isn't really built for smaller devices.<br>
+            you're welcome to use it, but it looks better on a laptop or pc!</span>
+    </div>
 <%- include('partials/buttonScript') %>
 
 </html>

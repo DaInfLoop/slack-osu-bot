@@ -22,7 +22,7 @@
     }
 
     body {
-        background-size: 110vw;
+        background-size: cover;
         background-repeat: no-repeat;
         background-position: center;
         background-attachment: fixed;
@@ -274,6 +274,11 @@
         }
     }
 
+    .mobile-table-sep {
+        display: none;
+        font-size: 8px;
+    }
+
     @media (max-width: 1002px) {
         #lazer-container {
             --translate-pos: translate(0, -50px);
@@ -288,7 +293,7 @@
             width: 100%;
         }
 
-        .menu-button {
+        .menu-button[menuBtn] {
             display: flex;
             flex-direction: column;
             gap: 8px;
@@ -304,7 +309,7 @@
             transform: skewX(0);
         }
 
-        .button-content {
+        .button-content[menuBtn] {
             position: absolute;
             top: 50%;
             left: 50%;
@@ -347,6 +352,31 @@
 
         .small-device-warning {
             display: block;
+        }
+
+        .view-profile {
+            display: none;
+        }
+
+        .ranking-header {
+            gap: 12px;
+            flex-direction: column;
+        }
+
+        .flag {
+            width: 24px;
+        }
+
+        .mobile-table-sep {
+            display: block;
+        }
+
+        .container {
+            width: 100%;
+        }
+
+        .slack-pfp {
+            display: none;
         }
     }
 
@@ -448,6 +478,10 @@
     a {
         color: rgb(238, 51, 153);
         text-decoration: none;
+    }
+
+    .slack-pfp {
+        border-radius: clamp(6px, min(22.222%, 12px), 12px);
     }
 </style>
 <script>
