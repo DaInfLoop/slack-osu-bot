@@ -45,7 +45,7 @@ BOT_TOKEN="xoxb-...."
 SIGNING_SECRET="..."
 
 ###########################################################
-# NGROK CREDENTIALS                                       #
+#                   NGROK CREDENTIALS                     #
 # [ngrok will only be used if NODE_ENV is "development".] #
 ###########################################################
 
@@ -84,4 +84,6 @@ The URL can be found (and edited) in [`src/commands/osu-multiplayer.ts`](src/com
 However, it is much easier to use ngrok during development to avoid having to change the URL back afterwards.
 
 ## License
-This repository is licensed under the MIT License. A copy of the license can be viewed at [LICENSE](/LICENSE).
+This repository is licensed under the GNU Affero General Public License v3.0. A copy of the license can be viewed at [LICENSE](/LICENSE).
+
+This repository was previously licensed under the MIT License. If you have a copy of the repository from before `07/12/2025` (dd/mm/yyyy) that still has the MIT License in the `LICENSE` file, your copy is under the MIT License. If you update your local copy to a version released after `07/12/2025`, you are subject to the limitations of the GNU Affero General Public License v3.0.
