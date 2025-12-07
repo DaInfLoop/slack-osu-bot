@@ -3,7 +3,7 @@ A rewrite of osu! bot for the Hack Club slack.
 
 ## Features
 ### 1. Hack Club Account Linking
-osu! bot V2 uses [Identity Vault](https://identity.hackclub.com) to link your Slack ID to your osu! account. The entire linking process takes place within your browser, compared to osu! bot V1 where the auth process split between Slack and the browser.
+osu! bot V2 uses [Hack Club Auth](https://auth.hackclub.com) to link your Slack ID to your osu! account. The entire linking process takes place within your browser, compared to osu! bot V1 where the auth process split between Slack and the browser.
 
 ![identity vault auth](.github/readme-images/identity-vault-auth.png)
 
