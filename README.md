@@ -86,4 +86,6 @@ However, it is much easier to use ngrok during development to avoid having to ch
 ## License
 This repository is licensed under the GNU Affero General Public License v3.0. A copy of the license can be viewed at [LICENSE](/LICENSE).
 
+All assets in the `static` directory are NOT mine, and belong to ppy Pty Ltd. These assets are avaliable in the [ppy/osu-resources](https://github.com/ppy/osu-resources) repository and have not been modified in any way.
+
 This repository was previously licensed under the MIT License. If you have a copy of the repository from before `07/12/2025` (dd/mm/yyyy) that still has the MIT License in the `LICENSE` file, your copy is under the MIT License. If you update your local copy to a version released after `07/12/2025`, you are subject to the limitations of the GNU Affero General Public License v3.0.
