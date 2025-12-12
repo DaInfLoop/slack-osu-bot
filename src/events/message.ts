@@ -34,7 +34,7 @@ export default async function Message(ctx: SlackEventMiddlewareArgs<"message"> &
         });     
     }
 
-    // ensure .replays fodler exists
+    // ensure .replays folder exists
     try {
         const statRes = await fs.stat('.replay');
         if (!statRes.isDirectory()) throw { code: 'IS_A_FILE' }
