@@ -1,6 +1,7 @@
 import type { AllMiddlewareArgs, SlackEventMiddlewareArgs, StringIndexed } from "@slack/bolt";
-import osr from "node-osr";
 import fs from "node:fs/promises";
+import osr from "node-osr";
+import { queue } from "../../replay-handler";
 
 // For proper type-checking + intellisense, replace "event_template" with the raw event name
 export default async function Message(ctx: SlackEventMiddlewareArgs<"message"> & AllMiddlewareArgs<StringIndexed>) {
@@ -45,7 +46,7 @@ export default async function Message(ctx: SlackEventMiddlewareArgs<"message"> &
             return ctx.client.chat.postEphemeral({
                 channel: "C165V7XT9",
                 user: ctx.body.user_id!,
-                text: `:warning: *Hey <${ctx.body.user_id}>!* An unexpected error occured while trying to handle your replay. Contact the bot maintainer. (${err.code})`
+                text: `:warning: *Hey <@${ctx.body.user_id}>!* An unexpected error occured while trying to handle your replay. Contact the bot maintainer. (${err.code})`
             });
         }
     }
@@ -56,6 +57,12 @@ export default async function Message(ctx: SlackEventMiddlewareArgs<"message"> &
     replayFile.end();
 
     replayFile.on('finish', () => {
-        // TODO: implement queue system again
+        queue.push({
+            md5: '',
+            playerName: '',
+            ts: msg.ts,
+            userId: ctx.body.user_id,
+            fileName: replay.name.slice(0, -4)
+        })
     })
 }

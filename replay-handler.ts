@@ -1,0 +1,131 @@
+import cron from 'node-cron';
+import { WebClient } from "@slack/web-api";
+
+export type QueueItem = {
+    md5: string,
+    playerName: string,
+    ts: string,
+    userId: string,
+    fileName: string
+};
+
+export const queue: QueueItem[] = [];
+const rendering = new Map<number, QueueItem>();
+
+const client = new WebClient(process.env.BOT_TOKEN);
+
+export const replayRenderTask = cron.createTask('*/5 * * * * *', async (ctx) => {
+    if (queue.length === 0) {
+        replayRenderTask.stop();
+        return;
+    }
+
+    const item = queue.shift();
+
+    // This should really never happen, but typescript-language-server is screaming at me because of it.
+    if (!item) {
+        replayRenderTask.stop();
+        return;
+    }
+
+    const render = await ordr.sendRender({
+        replay: `.replay/${item.md5}.osr`,
+        skin: 'default',
+        username: item.playerName,
+        showDanserLogo: false,
+        resolution: '1280x720',
+        introBGDim: 100,
+        inGameBGDim: 100,
+        breakBGDim: 100
+    });
+
+    if (render.errorCode !== 0) {
+        client.reactions.add({
+            channel: 'C165V7XT9',
+            name: 'x',
+            timestamp: item.ts
+        });
+
+        client.chat.postMessage({
+            channel: 'C165V7XT9',
+            thread_ts: item.ts,
+            text: `:warning: *Hey <@${item.userId}>!* o!rdr refused your replay: \`${render.message}\``
+        });
+
+        return;
+    }
+
+    client.reactions.add({
+        channel: 'C165V7XT9',
+        name: "thinkspin",
+        timestamp: item.ts
+    });
+
+    rendering.set(render.renderID!, item)
+});
+
+const socket = io('https://apis.issou.best', {
+    path: '/ordr/ws',
+    autoConnect: true
+});
+
+socket.on('connect', () => {
+    console.log('[ORDR] Connected to issou.best');
+});
+
+socket.on('disconnect', (reason) => {
+    if (reason === "io server disconnect") {
+        console.log('[ORDR] issou.best disconnected client, attempting to reconnect');
+        setTimeout(() => socket.connect(), 5_000);
+    }
+
+    console.log('[ORDR] Disconnected from issou.best:', reason);
+});
+
+socket.on('render_done_json', async (render) => {
+    const item = rendering.get(render.renderID!);
+
+    if (!item) return;
+
+    client.reactions.remove({
+        channel: 'C165V7XT9',
+        name: 'thinkspin',
+        timestamp: item.ts
+    });
+
+    client.chat.postMessage({
+        channel: 'C165V7XT9',
+        thread_ts: item.ts,
+        reply_broadcast: true,
+        text: `<${render.videoUrl}|${item.fileName}>`,
+        unfurl_media: true
+    })
+
+    rendering.delete(render.renderID!)
+});
+
+socket.on('render_failed_json', async (render) => {
+    const item = rendering.get(render.renderID!);
+
+    if (!item) return;
+
+    client.reactions.remove({
+        channel: 'C165V7XT9',
+        name: 'thinkspin',
+        timestamp: item.ts
+    });
+
+    client.reactions.add({
+        channel: 'C165V7XT9',
+        name: 'x',
+        timestamp: item.ts
+    });
+
+    client.chat.postMessage({
+        channel: 'C165V7XT9',
+        thread_ts: item.ts,
+        text: `:warning: *Hey <@${item.userId}>!* o!rdr couldn't render your replay for some reason: \`${render.errorMessage}\``
+    });
+
+    rendering.delete(render.renderID!)
+})
