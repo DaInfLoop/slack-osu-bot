@@ -98,6 +98,11 @@ export async function cacheLeaderboard(): Promise<typeof userCache> {
 
 const HCA_URL = "auth.hackclub.com";
 
+const lookupCache = new Map<`osu:${string}` | `slack:${string}`, {
+    user: { osu_id: string, slack_id: string } | null,
+    expires: number
+}>();
+
 export default function Setup(express: Application, app: IRouter) {
     express.set('view engine', 'ejs')
 
@@ -212,6 +217,84 @@ export default function Setup(express: Application, app: IRouter) {
         const lb = await cacheLeaderboard();
 
         res.json(lb)
+    })
+
+    app.get('/api/user/find', async (req, res) => {
+        if (!req.query.slackId && !req.query.osuId) {
+            return void res.status(400).json({
+                ok: false,
+                message: "no_params_specified"
+            });
+        }
+
+        if (req.query.slackId && req.query.osuId) {
+            return void res.status(400).json({
+                ok: false,
+                message: "both_params_specified"
+            });
+        }
+
+        const isSlackLookup = !!req.query.slackId;
+
+        const id = (_ => {
+            const qP = isSlackLookup ? req.query.slackId : req.query.osuId
+
+            return Array.isArray(qP) ? qP[0] : qP
+        })() as string;
+
+        const lookupKey = (isSlackLookup ? 'slack:' : 'osu:') + id as `osu:${string}` | `slack:${string}`;
+
+        const cached = lookupCache.get(lookupKey);
+
+        if (cached) {
+            if (cached.expires > Date.now()) {
+                if (cached.user === null) {
+                    return void res.status(404).json({
+                        ok: false,
+                        message: "not_found"
+                    });
+                }
+
+                return void res.json({
+                    ok: true,
+                    user: cached.user
+                });
+            }
+
+            lookupCache.delete(lookupKey);
+        }
+
+        const users = isSlackLookup ?
+            await sql<{ slack_id: string; osu_id: string }[]>`
+                SELECT * FROM users
+                WHERE slack_id = ${id}
+            ` :
+            await sql<{ slack_id: string; osu_id: string }[]>`
+                SELECT * FROM users
+                WHERE osu_id = ${id}
+            `;
+
+        if (users.length && users[0]) {
+            lookupCache.set(lookupKey, {
+                user: users[0],
+                expires: Date.now() + (5 * 60 * 1_000)
+            })
+
+            return void res.json({
+                ok: true,
+                user: users[0]
+            })
+        } else {
+            lookupCache.set(lookupKey, {
+                user: null,
+                expires: Date.now() + (45 * 1_000)
+            })
+
+            return void res.status(404).json({
+                ok: false,
+                message: "not_found"
+            })
+        }
     })
 }
 
