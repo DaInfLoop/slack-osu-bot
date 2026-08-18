@@ -102,3 +102,11 @@ export function countryCodeToFlag(countryCode?: string) {
     return flag;
 }
 // end stack overflow code
+
+const FIRST_DAILY = Date.UTC(2024, 6, 25, 0, 5);
+
+export function getDailyChallengeNumber(timestamp = Date.now()) {
+    return Math.floor(
+        (timestamp - FIRST_DAILY) / (24 * 60 * 60 * 1000)
+    ) + 1;
+}

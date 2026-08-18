@@ -8,7 +8,7 @@ function arraysEqualUnordered<T>(a: T[], b: T[]) {
 // END LLM GENERATED CODE
 
 import cron from "node-cron";
-import { sendGET, Mods } from "./utils";
+import { sendGET, Mods, getDailyChallengeNumber } from "./utils";
 import sql from "./postgres";
 import { WebClient } from "@slack/web-api";
 
@@ -76,7 +76,7 @@ export const multiLobbyTask = cron.createTask('*/5 * * * *', async (ctx) => {
                                 users: removed.map(r => ({
                                     external_id: r,
                                     display_name: callUsers.find(u => u.external_id == r)!.display_name!,
-                                    avatar_url: callUsers.find(u => u.external_id == r)!.avatar_url!,                                    
+                                    avatar_url: callUsers.find(u => u.external_id == r)!.avatar_url!,
                                 }))
                             })
                         }
@@ -87,7 +87,7 @@ export const multiLobbyTask = cron.createTask('*/5 * * * *', async (ctx) => {
                                 users: added.map(a => ({
                                     external_id: a,
                                     display_name: osuRoom.recent_participants.find(u => u.id.toString() == a)!.username!,
-                                    avatar_url: osuRoom.recent_participants.find(u => u.id.toString() == a)!.avatar_url!, 
+                                    avatar_url: osuRoom.recent_participants.find(u => u.id.toString() == a)!.avatar_url!,
                                 }))
                             })
                         }
@@ -113,7 +113,7 @@ export const multiLobbyTask = cron.createTask('*/5 * * * *', async (ctx) => {
     }
 })();
 
-const t = cron.schedule('5 5 0 * * *', async function dailyChallenge() {
+export async function runDailyChallengeTask() {
     const response = await sendGET<{
         id: number,
         name: string,
@@ -150,14 +150,16 @@ const t = cron.schedule('5 5 0 * * *', async function dailyChallenge() {
 
     const item = dailyChallenge.current_playlist_item;
 
+    const dailyNum = getDailyChallengeNumber();
+
     client.chat.postMessage({
         channel: 'C165V7XT9', // #osu
-        text: `A new daily challenge has started!`,
+        text: `<!subteam^S0BQN9RMTLP|osu-daily>: Daily Challenge #${dailyNum} has started! (${item.beatmap.difficulty_rating.toFixed(2)}*)`,
         blocks: [
             {
                 type: 'header',
                 text: {
-                    text: ruleset.split(' ').shift() + " A new daily challenge has started!",
+                    text: ruleset.split(' ').shift() + ` Daily Challenge #${dailyNum} has started!`,
                     emoji: true,
                     type: "plain_text"
                 }
@@ -170,8 +172,8 @@ const t = cron.schedule('5 5 0 * * *', async function dailyChallenge() {
                         }#osu/${item.beatmap.id
                         }|${item.beatmap.beatmapset.title
                         } - ${item.beatmap.beatmapset.artist
-                        } (${item.beatmap.difficulty_rating
-                        })>
+                        } (${item.beatmap.difficulty_rating.toFixed(2)
+                        }\*)>
                     
 *Ruleset:* ${ruleset}
 *Required mods:* ${item.required_mods.length === 0 ? "None" : item.required_mods.map((mod: any) =>
@@ -198,7 +200,18 @@ const t = cron.schedule('5 5 0 * * *', async function dailyChallenge() {
                         }
                     }
                 ]
+            },
+            {
+                type: 'context',
+                elements: [
+                    {
+                        type: 'mrkdwn',
+                        text: `<!subteam^S0BQN9RMTLP|osu-daily>`
+                    }
+                ]
             }
         ]
     })
-}, { timezone: 'UTC' });
+}
+
+const t = cron.schedule('5 5 0 * * *', runDailyChallengeTask, { timezone: 'UTC' });
