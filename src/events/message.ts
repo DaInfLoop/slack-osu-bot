@@ -1,14 +1,16 @@
 import type { AllMiddlewareArgs, SlackEventMiddlewareArgs, StringIndexed } from "@slack/bolt";
-import fs from "node:fs/promises";
+import fs from "node:fs";
+// @ts-expect-error No typings!
 import osr from "node-osr";
-import { queue } from "../../replay-handler";
+import { queue, replayRenderTask } from "../../replay-handler";
+import type { FileShareMessageEvent } from "@slack/web-api/dist/methods";
 
 // For proper type-checking + intellisense, replace "event_template" with the raw event name
 export default async function Message(ctx: SlackEventMiddlewareArgs<"message"> & AllMiddlewareArgs<StringIndexed>) {
     if (ctx.event.channel !== "C165V7XT9") return;
     if (ctx.event.subtype !== "file_share") return;
 
-    const msg = ctx.body.message!;
+    const msg = ctx.body.message! as FileShareMessageEvent;
 
     if (!msg.files) return;
     if (msg.files.length === 0) return;
@@ -37,11 +39,13 @@ export default async function Message(ctx: SlackEventMiddlewareArgs<"message"> &
 
     // ensure .replays folder exists
     try {
-        const statRes = await fs.stat('.replay');
+        const statRes = await fs.promises.stat('.replay');
         if (!statRes.isDirectory()) throw { code: 'IS_A_FILE' }
-    } catch (err) {
+    } catch (e) {
+        const err = e as NodeJS.ErrnoException;
+
         if (err.code == 'ENOENT') {
-            await fs.mkdir('.replay')
+            await fs.promises.mkdir('.replay')
         } else {
             return ctx.client.chat.postEphemeral({
                 channel: "C165V7XT9",
@@ -56,13 +60,15 @@ export default async function Message(ctx: SlackEventMiddlewareArgs<"message"> &
     replayFile.write(replayBuffer);
     replayFile.end();
 
-    replayFile.on('finish', () => {
+    replayFile.on('finish', async () => {
         queue.push({
-            md5: '',
-            playerName: '',
+            md5: _replay.replayMD5,
+            playerName: _replay.playerName,
             ts: msg.ts,
             userId: ctx.body.user_id,
-            fileName: replay.name.slice(0, -4)
+            fileName: replay.name!.slice(0, -4),
         })
+
+        replayRenderTask.start();
     })
 }

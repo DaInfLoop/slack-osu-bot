@@ -28,7 +28,10 @@
     "ejs": "^3.1.10",
     "express": "^5.2.1",
     "node-cron": "^4.2.1",
-    "postgres": "^3.4.7"
+    "node-osr": "^1.2.1",
+    "ordr.js": "^4.1.0",
+    "postgres": "^3.4.7",
+    "socket.io-client": "^4.8.3"
   },
   "devDependencies": {
     "@ngrok/ngrok": "^1.6.0",

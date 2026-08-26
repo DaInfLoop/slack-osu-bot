@@ -1,5 +1,7 @@
 import cron from 'node-cron';
 import { WebClient } from "@slack/web-api";
+import { io } from "socket.io-client";
+import { Client, Events } from "ordr.js";
 
 export type QueueItem = {
     md5: string,
@@ -13,6 +15,7 @@ export const queue: QueueItem[] = [];
 const rendering = new Map<number, QueueItem>();
 
 const client = new WebClient(process.env.BOT_TOKEN);
+const ordr = new Client(process.env.ORDR_TOKEN!);
 
 export const replayRenderTask = cron.createTask('*/5 * * * * *', async (ctx) => {
     if (queue.length === 0) {
@@ -39,6 +42,7 @@ export const replayRenderTask = cron.createTask('*/5 * * * * *', async (ctx) => 
         breakBGDim: 100
     });
 
+    // @ts-expect-error 0 is the code for "no error"
     if (render.errorCode !== 0) {
         client.reactions.add({
             channel: 'C165V7XT9',
