@@ -83,6 +83,42 @@ export enum Mods {
     "10K" = "Ten Keys"
 }
 
+const rulesets = [":osu-standard: osu!standard", ":osu-taiko: osu!taiko", ":osu-catch: osu!catch", ":osu-mania: osu!mania"] as const;
+
+export function rulesetToEmoji(ruleset: string | number, includeText: boolean = false): string {
+    let r = "";
+
+    if (typeof ruleset === "string") {
+        switch (ruleset.toLowerCase()) {
+            case "osu":
+                r = rulesets[0];
+                break;
+            case "taiko":
+                r = rulesets[1];
+                break;
+            case "fruits":
+                r = rulesets[2];
+                break;
+            case "mania":
+                r = rulesets[3];
+                break;
+            default:
+                r = rulesets[0];
+                break
+        }
+    } else if (typeof ruleset === "number") {
+        r = rulesets[ruleset] || rulesets[0];
+    } else {
+        r = rulesets[0];
+    }
+
+    if (!includeText) {
+        return r.split(" ")[0]!;
+    }
+
+    return r;
+}
+
 // live laugh love stackoverflow :D
 export function countryCodeToFlag(countryCode?: string) {
     // Validate the input to be exactly two characters long and all alphabetic
