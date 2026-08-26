@@ -86,12 +86,12 @@ async function generateLastPlayedMessage(score: OsuScore | null, slackId?: strin
             },
             title: {
                 type: "mrkdwn",
-                text: `${ruleset.split(" ")[0]!} ${score.beatmapset.artist} - ${score.beatmapset.title} [${score.beatmap.version}] (${score.beatmap.difficulty_rating.toFixed(2)}*)`,
+                text: `${ruleset.split(" ")[0]!} ${score.beatmapset.artist} - ${score.beatmapset.title} (${score.beatmap.version} - ${score.beatmap.difficulty_rating.toFixed(2)}*)`,
                 verbatim: false
             },
             subtitle: {
                 type: "mrkdwn",
-                text: `played by ${slackId ? `<@${slackId}>` : score.user.username} on <!date^${Math.floor(date.getTime() / 1000)}^{ago}|${date.toLocaleString()}>`,
+                text: `played by ${slackId ? `<@${slackId}>` : score.user.username} <!date^${Math.floor(date.getTime() / 1000)}^{ago}|${date.toLocaleString()}>`,
                 verbatim: false
             },
             body: {
@@ -101,34 +101,36 @@ async function generateLastPlayedMessage(score: OsuScore | null, slackId?: strin
             },
             subtext: {
                 type: "mrkdwn",
-                text: `${ruleset} | Mods: ${score.mods.join(", ")} | ${score.accuracy.toFixed(2)}% | ${score.max_combo}x | ${score.rank}`,
+                text: `${ruleset} | Mods: ${score.mods.join(", ") || "None"} | ${(score.accuracy * 100).toFixed(2)}% | ${score.max_combo}x | ${score.rank}`,
                 verbatim: false
             },
             actions: [
-				{
-                    type: "button",
-                    text: {
-                        type: "plain_text",
-                        text: "Generate Video",
-                        emoji: false
-					},
-                    action_id: "generate_replay",
-                    value: score.id.toString()
-				},
-				{
+                ...(score.mode === "osu" ? [
+                    {
+                        type: "button",
+                        text: {
+                            type: "plain_text",
+                            text: "Generate Video",
+                            emoji: false
+                        },
+                        action_id: "generate_replay",
+                        value: score.id.toString(),
+                    }] : []
+                ),
+                {
                     type: "button",
                     text: {
                         type: "plain_text",
                         text: "Download Replay File",
                         emoji: false
-					},
+                    },
                     action_id: "noop",
                     url: `https://osu.ppy.sh/scores/osu/${score.id}/download`,
                     value: score.id.toString()
-				}
-			]
-		}
-	] 
+                }
+            ]
+        }
+    ]
 }
 
 export default async function LastPlayed(ctx: SlackCommandMiddlewareArgs & AllMiddlewareArgs<StringIndexed>) {

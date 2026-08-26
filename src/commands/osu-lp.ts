@@ -1,2 +1,3 @@
 // Alias for /osu-lastplayed
-export * from "./osu-lastplayed";
+import LastPlayedCommand from "./osu-lastplayed";
+export default LastPlayedCommand;
