@@ -7,6 +7,7 @@ export type QueueItem = {
     md5: string,
     playerName: string,
     ts: string,
+    channel?: string,
     userId: string,
     fileName: string
 };
@@ -45,13 +46,13 @@ export const replayRenderTask = cron.createTask('*/5 * * * * *', async (ctx) => 
     // @ts-expect-error 0 is the code for "no error"
     if (render.errorCode !== 0) {
         client.reactions.add({
-            channel: 'C165V7XT9',
+            channel: item.channel || 'C165V7XT9',
             name: 'x',
             timestamp: item.ts
         });
 
         client.chat.postMessage({
-            channel: 'C165V7XT9',
+            channel: item.channel || 'C165V7XT9',
             thread_ts: item.ts,
             text: `:warning: *Hey <@${item.userId}>!* o!rdr refused your replay: \`${render.message}\``
         });
@@ -60,7 +61,7 @@ export const replayRenderTask = cron.createTask('*/5 * * * * *', async (ctx) => 
     }
 
     client.reactions.add({
-        channel: 'C165V7XT9',
+        channel: item.channel || 'C165V7XT9',
         name: "thinkspin",
         timestamp: item.ts
     });
@@ -92,13 +93,13 @@ socket.on('render_done_json', async (render) => {
     if (!item) return;
 
     client.reactions.remove({
-        channel: 'C165V7XT9',
+        channel: item.channel || 'C165V7XT9',
         name: 'thinkspin',
         timestamp: item.ts
     });
 
     client.chat.postMessage({
-        channel: 'C165V7XT9',
+        channel: item.channel || 'C165V7XT9',
         thread_ts: item.ts,
         reply_broadcast: true,
         text: `<${render.videoUrl}|${item.fileName}>`,
@@ -114,19 +115,19 @@ socket.on('render_failed_json', async (render) => {
     if (!item) return;
 
     client.reactions.remove({
-        channel: 'C165V7XT9',
+        channel: item.channel || 'C165V7XT9',
         name: 'thinkspin',
         timestamp: item.ts
     });
 
     client.reactions.add({
-        channel: 'C165V7XT9',
+        channel: item.channel || 'C165V7XT9',
         name: 'x',
         timestamp: item.ts
     });
 
     client.chat.postMessage({
-        channel: 'C165V7XT9',
+        channel: item.channel || 'C165V7XT9',
         thread_ts: item.ts,
         text: `:warning: *Hey <@${item.userId}>!* o!rdr couldn't render your replay for some reason: \`${render.errorMessage}\``
     });

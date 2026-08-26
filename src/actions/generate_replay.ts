@@ -1,0 +1,64 @@
+import type { AllMiddlewareArgs, BlockButtonAction, SlackActionMiddlewareArgs, StringIndexed } from "@slack/bolt";
+import { sendGET } from "../../utils";
+import fs from "node:fs";
+// @ts-expect-error No typings!
+import osr from "node-osr";
+import { queue, replayRenderTask } from "../../replay-handler";
+import type { OsuScore } from "../commands/osu-lastplayed";
+
+export default async function GenerateReplay(ctx: SlackActionMiddlewareArgs<BlockButtonAction> & AllMiddlewareArgs<StringIndexed>) {
+    await ctx.ack();
+
+    const replayId = ctx.action.value;
+
+    const replayInfo = await sendGET<OsuScore>(`/scores/${replayId}`, { json: true });
+    const replayData = await sendGET(`/scores/${replayId}/download`, { json: false });
+
+    const replayBuffer = Buffer.from(replayData);
+
+    const _replay = await osr.read(replayBuffer);
+
+    if (_replay.gameMode !== 0) {
+        return ctx.client.chat.postEphemeral({
+            channel: "C165V7XT9",
+            user: ctx.body.user.id,
+            text: `:warning: *Hey <${ctx.body.user.id}>!* Unfortunately, o!rdr doesn't support replays other than :osu-standard: osu!standard replays, so I can't render this replay. Sorry!`
+        });     
+    }
+
+    // ensure .replays folder exists
+    try {
+        const statRes = await fs.promises.stat('.replay');
+        if (!statRes.isDirectory()) throw { code: 'IS_A_FILE' }
+    } catch (e) {
+        const err = e as NodeJS.ErrnoException;
+
+        if (err.code == 'ENOENT') {
+            await fs.promises.mkdir('.replay')
+        } else {
+            return ctx.client.chat.postEphemeral({
+                channel: "C165V7XT9",
+                user: ctx.body.user.id,
+                text: `:warning: *Hey <@${ctx.body.user.id}>!* An unexpected error occured while trying to handle your replay. Contact the bot maintainer. (${err.code})`
+            });
+        }
+    }
+
+    const replayFile = fs.createWriteStream(`.replay/${_replay.replayMD5}.osr`);
+
+    replayFile.write(replayBuffer);
+    replayFile.end();
+
+    replayFile.on('finish', async () => {
+        queue.push({
+            md5: _replay.replayMD5,
+            playerName: _replay.playerName,
+            ts: ctx.body.message?.ts!,
+            channel: ctx.body.channel?.id!,
+            userId: ctx.body.user.id,
+            fileName: `${_replay.playerName} playing ${replayInfo.beatmapset.artist} - ${replayInfo.beatmapset.title} [${replayInfo.beatmap.version}]`,
+        })
+
+        replayRenderTask.start();
+    })
+}

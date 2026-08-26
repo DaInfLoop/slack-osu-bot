@@ -2,7 +2,7 @@ import type { AllMiddlewareArgs, SlackCommandMiddlewareArgs, StringIndexed } fro
 import sql from "../../postgres";
 import { rulesetToEmoji, sendGET } from "../../utils";
 
-type OsuScore = {
+export type OsuScore = {
     id: number;
     accuracy: number;
     created_at: string;
