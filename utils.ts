@@ -44,14 +44,24 @@ export async function getAccessToken(slack_id: string): Promise<string | null> {
     }
 }
 
-export async function sendGET<T>(path: string, token?: string): Promise<T> {
-    const _token = token || await getTemporaryToken();
+export function sendGET<T>(path: string): Promise<T>;
+export function sendGET<T>(path: string, token: string): Promise<T>;
+export function sendGET<T>(path: string, opts: { token?: string; json: true }): Promise<T>;
+export function sendGET(path: string, opts: { token?: string; json: false }): Promise<ArrayBuffer>;
+export async function sendGET<T>(path: string, tokenOrOpts?: string | { token?: string, json: boolean }): Promise<T> {
+    const _token = typeof tokenOrOpts === "string" ? tokenOrOpts : tokenOrOpts?.token || await getTemporaryToken();
 
     const data = await fetch(`https://osu.ppy.sh/api/v2/${path.replace(/^\/+/, '')}`, {
         headers: {
             'Authorization': `Bearer ${_token}`
         }
-    }).then(res => res.json());
+    }).then(res => {
+        if (tokenOrOpts && typeof tokenOrOpts === "object" && tokenOrOpts.json === false) {
+            return res.arrayBuffer();
+        }
+
+        return res.json();
+    });
 
     return data as T
 }

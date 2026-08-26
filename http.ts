@@ -195,7 +195,7 @@ export default function Setup(express: Application, app: IRouter) {
             console.log(data)
             return res.json({ ok: false }) && undefined;
         } else {
-            const user = await sendGET<{ id: number }>('/me', data.access_token);
+            const user = await sendGET<{ id: number }>('/me', data.access_token!);
 
             await sql`INSERT INTO users VALUES (${_userId!}, ${user.id.toString()})`
 
