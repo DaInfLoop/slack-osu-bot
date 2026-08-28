@@ -1,18 +1,30 @@
 import cron from 'node-cron';
 import { WebClient } from "@slack/web-api";
+import { io } from "socket.io-client";
+import { Client } from "ordr.js";
+import type { CardBlock } from "@slack/types";
+import type { RespondFn } from "@slack/bolt";
 
 export type QueueItem = {
     md5: string,
     playerName: string,
     ts: string,
+    channel?: string,
     userId: string,
     fileName: string
-};
+} & ({
+    fromLastPlayed: boolean,
+    lastPlayedRespondFunction: RespondFn
+} | {
+    fromLastPlayed: never,
+    lastPlayedRespondFunction: never
+});
 
 export const queue: QueueItem[] = [];
 const rendering = new Map<number, QueueItem>();
 
 const client = new WebClient(process.env.BOT_TOKEN);
+const ordr = new Client(process.env.ORDR_TOKEN!);
 
 export const replayRenderTask = cron.createTask('*/5 * * * * *', async (ctx) => {
     if (queue.length === 0) {
@@ -39,15 +51,16 @@ export const replayRenderTask = cron.createTask('*/5 * * * * *', async (ctx) => 
         breakBGDim: 100
     });
 
+    // @ts-expect-error 0 is the code for "no error"
     if (render.errorCode !== 0) {
         client.reactions.add({
-            channel: 'C165V7XT9',
+            channel: item.channel || 'C165V7XT9',
             name: 'x',
             timestamp: item.ts
         });
 
         client.chat.postMessage({
-            channel: 'C165V7XT9',
+            channel: item.channel || 'C165V7XT9',
             thread_ts: item.ts,
             text: `:warning: *Hey <@${item.userId}>!* o!rdr refused your replay: \`${render.message}\``
         });
@@ -56,7 +69,7 @@ export const replayRenderTask = cron.createTask('*/5 * * * * *', async (ctx) => 
     }
 
     client.reactions.add({
-        channel: 'C165V7XT9',
+        channel: item.channel || 'C165V7XT9',
         name: "thinkspin",
         timestamp: item.ts
     });
@@ -88,13 +101,13 @@ socket.on('render_done_json', async (render) => {
     if (!item) return;
 
     client.reactions.remove({
-        channel: 'C165V7XT9',
+        channel: item.channel || 'C165V7XT9',
         name: 'thinkspin',
         timestamp: item.ts
     });
 
     client.chat.postMessage({
-        channel: 'C165V7XT9',
+        channel: item.channel || 'C165V7XT9',
         thread_ts: item.ts,
         reply_broadcast: true,
         text: `<${render.videoUrl}|${item.fileName}>`,
@@ -102,6 +115,46 @@ socket.on('render_done_json', async (render) => {
     })
 
     rendering.delete(render.renderID!)
+
+    if (item.fromLastPlayed) {
+        const msgHist = await client.conversations.history({
+            channel: item.channel || 'C165V7XT9',
+            latest: item.ts,
+            limit: 1,
+            inclusive: true
+        });
+
+        if (!msgHist.messages || msgHist.messages.length === 0) return;
+
+        const originalBlock = msgHist.messages?.[0]?.blocks?.[0] as unknown as CardBlock | undefined;
+        if (!originalBlock) return;
+
+        const oldActions = originalBlock.actions ?? [];
+        const newActions = oldActions.map(action => {
+            if (action.type === "button" && action.action_id === "generate_replay") {
+                return {
+                    ...action,
+                    text: {
+                        type: "plain_text",
+                        text: "View Rendered Video",
+                        emoji: false
+                    },
+                    action_id: "noop_1",
+                    url: render.videoUrl
+                } as any;
+            }
+            return action;
+        });
+
+        await item.lastPlayedRespondFunction({
+            blocks: [
+                {
+                    ...originalBlock,
+                    actions: newActions
+                }
+            ]
+        })
+    }
 });
 
 socket.on('render_failed_json', async (render) => {
@@ -110,19 +163,19 @@ socket.on('render_failed_json', async (render) => {
     if (!item) return;
 
     client.reactions.remove({
-        channel: 'C165V7XT9',
+        channel: item.channel || 'C165V7XT9',
         name: 'thinkspin',
         timestamp: item.ts
     });
 
     client.reactions.add({
-        channel: 'C165V7XT9',
+        channel: item.channel || 'C165V7XT9',
         name: 'x',
         timestamp: item.ts
     });
 
     client.chat.postMessage({
-        channel: 'C165V7XT9',
+        channel: item.channel || 'C165V7XT9',
         thread_ts: item.ts,
         text: `:warning: *Hey <@${item.userId}>!* o!rdr couldn't render your replay for some reason: \`${render.errorMessage}\``
     });

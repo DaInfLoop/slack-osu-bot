@@ -44,16 +44,24 @@ export async function getAccessToken(slack_id: string): Promise<string | null> {
     }
 }
 
-export async function sendGET<T>(path: string, token?: string): Promise<T> {
-    const _token = token || await getTemporaryToken();
+export function sendGET<T>(path: string): Promise<T>;
+export function sendGET<T>(path: string, token: string): Promise<T>;
+export function sendGET<T>(path: string, opts: { token?: string; json: true }): Promise<T>;
+export function sendGET(path: string, opts: { token?: string; json: false }): Promise<ArrayBuffer>;
+export async function sendGET<T>(path: string, tokenOrOpts?: string | { token?: string, json: boolean }): Promise<T | ArrayBuffer> {
+    const _token = typeof tokenOrOpts === "string" ? tokenOrOpts : tokenOrOpts?.token || await getTemporaryToken();
 
-    const data = await fetch(`https://osu.ppy.sh/api/v2/${path.replace(/^\/+/, '')}`, {
+    const response = await fetch(`https://osu.ppy.sh/api/v2/${path.replace(/^\/+/, '')}`, {
         headers: {
             'Authorization': `Bearer ${_token}`
         }
-    }).then(res => res.json());
+    });
 
-    return data as T
+    if (tokenOrOpts && typeof tokenOrOpts === "object" && tokenOrOpts.json === false) {
+        return response.arrayBuffer();
+    }
+
+    return await response.json() as T;
 }
 
 export enum Mods {
@@ -81,6 +89,42 @@ export enum Mods {
     "8K" = "Eight Keys",
     "9K" = "Nine Keys",
     "10K" = "Ten Keys"
+}
+
+const rulesets = [":osu-standard: osu!standard", ":osu-taiko: osu!taiko", ":osu-catch: osu!catch", ":osu-mania: osu!mania"] as const;
+
+export function rulesetToEmoji(ruleset: string | number, includeText: boolean = false): string {
+    let r = "";
+
+    if (typeof ruleset === "string") {
+        switch (ruleset.toLowerCase()) {
+            case "osu":
+                r = rulesets[0];
+                break;
+            case "taiko":
+                r = rulesets[1];
+                break;
+            case "fruits":
+                r = rulesets[2];
+                break;
+            case "mania":
+                r = rulesets[3];
+                break;
+            default:
+                r = rulesets[0];
+                break
+        }
+    } else if (typeof ruleset === "number") {
+        r = rulesets[ruleset] || rulesets[0];
+    } else {
+        r = rulesets[0];
+    }
+
+    if (!includeText) {
+        return r.split(" ")[0]!;
+    }
+
+    return r;
 }
 
 // live laugh love stackoverflow :D

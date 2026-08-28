@@ -8,7 +8,7 @@ function arraysEqualUnordered<T>(a: T[], b: T[]) {
 // END LLM GENERATED CODE
 
 import cron from "node-cron";
-import { sendGET, Mods, getDailyChallengeNumber } from "./utils";
+import { sendGET, Mods, rulesetToEmoji, getDailyChallengeNumber } from "./utils";
 import sql from "./postgres";
 import { WebClient } from "@slack/web-api";
 
@@ -146,7 +146,7 @@ export async function runDailyChallengeTask() {
         return;
 
     // This is usually ALWAYS osu!std, but one time it was osu!taiko and I don't want stuff to break in case it happens again.
-    const ruleset = [":osu-standard: osu!standard", ":osu-taiko: osu!taiko", ":osu-catch: osu!catch", ":osu-mania: osu!mania"][dailyChallenge.current_playlist_item.ruleset_id]!;
+    const ruleset = rulesetToEmoji(dailyChallenge.current_playlist_item.ruleset_id, true);
 
     const item = dailyChallenge.current_playlist_item;
 

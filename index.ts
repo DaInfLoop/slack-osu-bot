@@ -1,13 +1,13 @@
-import BoltJS from "@slack/bolt";
+import { App, ExpressReceiver } from "@slack/bolt";
 import "dotenv/config";
 import fs from "node:fs/promises";
 import path from "node:path";
 
 import * as config from "./config";
 
-const receiver = new BoltJS.ExpressReceiver({ signingSecret: process.env.SIGNING_SECRET! })
+const receiver = new ExpressReceiver({ signingSecret: process.env.SIGNING_SECRET! })
 
-const app = new BoltJS.App({
+const app = new App({
     signingSecret: process.env.SIGNING_SECRET,
     token: process.env.BOT_TOKEN,
     receiver
@@ -27,6 +27,10 @@ if (config.interactionImports.actions) {
         app.action(actionName, actionExport.default)
     }
 }
+
+app.action(/noop(_\d+)?/, async (ctx) => {
+    await ctx.ack();
+});
 
 if (config.interactionImports.commands) {
     const commandsDir = await fs.readdir(path.join(process.cwd(), "src", "commands"));
