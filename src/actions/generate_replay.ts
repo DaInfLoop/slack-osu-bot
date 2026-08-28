@@ -9,6 +9,18 @@ import type { OsuScore } from "../commands/osu-lastplayed";
 export default async function GenerateReplay(ctx: SlackActionMiddlewareArgs<BlockButtonAction> & AllMiddlewareArgs<StringIndexed>) {
     await ctx.ack();
 
+    const channelInfo = await ctx.client.conversations.info({
+        channel: ctx.body.channel?.id!
+    });
+
+    if (!channelInfo.ok) {
+        return ctx.client.chat.postEphemeral({
+            channel: ctx.body.channel?.id!,
+            user: ctx.body.user.id,
+            text: `:warning: I can't send messages in this channel. Please invite me to the channel and try again.`
+        });
+    }
+
     const replayId = ctx.action.value;
 
     const replayInfo = await sendGET<OsuScore>(`/scores/${replayId}`, { json: true });
