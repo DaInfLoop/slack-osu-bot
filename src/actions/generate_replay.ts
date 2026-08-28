@@ -32,7 +32,7 @@ export default async function GenerateReplay(ctx: SlackActionMiddlewareArgs<Bloc
 
     if (queue.some(item => item.md5 === _replay.replayMD5)) {
         return ctx.client.chat.postEphemeral({
-            channel: "C165V7XT9",
+            channel: ctx.body.channel?.id!,
             user: ctx.body.user.id,
             text: `:warning: This replay has already been queued for rendering.`
         });
@@ -42,7 +42,7 @@ export default async function GenerateReplay(ctx: SlackActionMiddlewareArgs<Bloc
         return ctx.client.chat.postEphemeral({
             channel: "C165V7XT9",
             user: ctx.body.user.id,
-            text: `:warning: *Hey <${ctx.body.user.id}>!* Unfortunately, o!rdr doesn't support replays other than :osu-standard: osu!standard replays, so I can't render this replay. Sorry!`
+            text: `:warning: *Hey <@${ctx.body.user.id}>!* Unfortunately, o!rdr doesn't support replays other than :osu-standard: osu!standard replays, so I can't render this replay. Sorry!`
         });     
     }
 
@@ -59,7 +59,7 @@ export default async function GenerateReplay(ctx: SlackActionMiddlewareArgs<Bloc
             return ctx.client.chat.postEphemeral({
                 channel: "C165V7XT9",
                 user: ctx.body.user.id,
-                text: `:warning: *Hey <@${ctx.body.user.id}>!* An unexpected error occured while trying to handle your replay. Contact the bot maintainer. (${err.code})`
+                text: `:warning: *Hey <@${ctx.body.user.id}>!* An unexpected error occurred while trying to handle your replay. Contact the bot maintainer. (${err.code})`
             });
         }
     }
