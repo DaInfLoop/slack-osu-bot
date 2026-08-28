@@ -18,6 +18,14 @@ export default async function GenerateReplay(ctx: SlackActionMiddlewareArgs<Bloc
 
     const _replay = await osr.read(replayBuffer);
 
+    if (queue.some(item => item.md5 === _replay.replayMD5)) {
+        return ctx.client.chat.postEphemeral({
+            channel: "C165V7XT9",
+            user: ctx.body.user.id,
+            text: `:warning: This replay has already been queued for rendering.`
+        });
+    }
+
     if (_replay.gameMode !== 0) {
         return ctx.client.chat.postEphemeral({
             channel: "C165V7XT9",
@@ -57,7 +65,14 @@ export default async function GenerateReplay(ctx: SlackActionMiddlewareArgs<Bloc
             channel: ctx.body.channel?.id!,
             userId: ctx.body.user.id,
             fileName: `${_replay.playerName} playing ${replayInfo.beatmapset.artist} - ${replayInfo.beatmapset.title} [${replayInfo.beatmap.version}]`,
+            fromLastPlayed: true
         })
+
+        ctx.client.chat.postEphemeral({
+            channel: "C165V7XT9",
+            user: ctx.body.user.id,
+            text: `:white_check_mark: This replay is now queued for rendering.`
+        });
 
         replayRenderTask.start();
     })

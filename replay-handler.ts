@@ -1,7 +1,8 @@
 import cron from 'node-cron';
 import { WebClient } from "@slack/web-api";
 import { io } from "socket.io-client";
-import { Client, Events } from "ordr.js";
+import { Client } from "ordr.js";
+import type { CardBlock } from "@slack/types";
 
 export type QueueItem = {
     md5: string,
@@ -9,7 +10,8 @@ export type QueueItem = {
     ts: string,
     channel?: string,
     userId: string,
-    fileName: string
+    fileName: string,
+    fromLastPlayed?: boolean
 };
 
 export const queue: QueueItem[] = [];
@@ -107,6 +109,48 @@ socket.on('render_done_json', async (render) => {
     })
 
     rendering.delete(render.renderID!)
+
+    if (item.fromLastPlayed) {
+        const msgHist = await client.conversations.history({
+            channel: item.channel || 'C165V7XT9',
+            latest: item.ts,
+            limit: 1,
+            inclusive: true
+        });
+
+        if (!msgHist.messages || msgHist.messages.length === 0) return;
+
+        const originalBlock = msgHist.messages?.[0]?.blocks?.[0] as unknown as CardBlock | undefined;
+        if (!originalBlock) return;
+
+        const oldActions = originalBlock.actions ?? [];
+        const newActions = oldActions.map(action => {
+            if (action.type === "button" && action.action_id === "generate_replay") {
+                return {
+                    ...action,
+                    text: {
+                        type: "plain_text",
+                        text: "View Rendered Video",
+                        emoji: false
+                    },
+                    action_id: "noop",
+                    url: render.videoUrl
+                } as any;
+            }
+            return action;
+        });
+
+        await client.chat.update({
+            channel: item.channel || 'C165V7XT9',
+            ts: item.ts,
+            blocks: [
+                {
+                    ...originalBlock,
+                    actions: newActions
+                }
+            ]
+        })
+    }
 });
 
 socket.on('render_failed_json', async (render) => {
