@@ -96,7 +96,8 @@ export default async function GenerateReplay(ctx: SlackActionMiddlewareArgs<Bloc
             channel: ctx.body.channel?.id!,
             userId: ctx.body.user.id,
             fileName: `${_replay.playerName} playing ${replayInfo.beatmapset.artist} - ${replayInfo.beatmapset.title} [${replayInfo.beatmap.version}]`,
-            fromLastPlayed: true
+            fromLastPlayed: true,
+            lastPlayedRespondFunction: ctx.respond
         })
 
         await ctx.client.chat.postEphemeral({

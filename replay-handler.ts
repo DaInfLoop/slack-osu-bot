@@ -3,6 +3,7 @@ import { WebClient } from "@slack/web-api";
 import { io } from "socket.io-client";
 import { Client } from "ordr.js";
 import type { CardBlock } from "@slack/types";
+import type { RespondFn } from "@slack/bolt";
 
 export type QueueItem = {
     md5: string,
@@ -10,9 +11,14 @@ export type QueueItem = {
     ts: string,
     channel?: string,
     userId: string,
-    fileName: string,
-    fromLastPlayed?: boolean
-};
+    fileName: string
+} & ({
+    fromLastPlayed: boolean,
+    lastPlayedRespondFunction: RespondFn
+} | {
+    fromLastPlayed: never,
+    lastPlayedRespondFunction: never
+});
 
 export const queue: QueueItem[] = [];
 const rendering = new Map<number, QueueItem>();
@@ -140,9 +146,7 @@ socket.on('render_done_json', async (render) => {
             return action;
         });
 
-        await client.chat.update({
-            channel: item.channel || 'C165V7XT9',
-            ts: item.ts,
+        await item.lastPlayedRespondFunction({
             blocks: [
                 {
                     ...originalBlock,
