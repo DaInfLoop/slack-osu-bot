@@ -48,22 +48,20 @@ export function sendGET<T>(path: string): Promise<T>;
 export function sendGET<T>(path: string, token: string): Promise<T>;
 export function sendGET<T>(path: string, opts: { token?: string; json: true }): Promise<T>;
 export function sendGET(path: string, opts: { token?: string; json: false }): Promise<ArrayBuffer>;
-export async function sendGET<T>(path: string, tokenOrOpts?: string | { token?: string, json: boolean }): Promise<T> {
+export async function sendGET<T>(path: string, tokenOrOpts?: string | { token?: string, json: boolean }): Promise<T | ArrayBuffer> {
     const _token = typeof tokenOrOpts === "string" ? tokenOrOpts : tokenOrOpts?.token || await getTemporaryToken();
 
-    const data = await fetch(`https://osu.ppy.sh/api/v2/${path.replace(/^\/+/, '')}`, {
+    const response = await fetch(`https://osu.ppy.sh/api/v2/${path.replace(/^\/+/, '')}`, {
         headers: {
             'Authorization': `Bearer ${_token}`
         }
-    }).then(res => {
-        if (tokenOrOpts && typeof tokenOrOpts === "object" && tokenOrOpts.json === false) {
-            return res.arrayBuffer();
-        }
-
-        return res.json();
     });
 
-    return data as T
+    if (tokenOrOpts && typeof tokenOrOpts === "object" && tokenOrOpts.json === false) {
+        return response.arrayBuffer();
+    }
+
+    return await response.json() as T;
 }
 
 export enum Mods {
