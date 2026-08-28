@@ -50,15 +50,17 @@ export default async function GenerateReplay(ctx: SlackActionMiddlewareArgs<Bloc
     const _replay = await osr.read(replayBuffer);
 
     if (queue.some(item => item.md5 === _replay.replayMD5)) {
-        return ctx.respond({
-            response_type: 'ephemeral',
+        return ctx.client.chat.postEphemeral({
+            channel: ctx.body.channel?.id!,
+            user: ctx.body.user.id,
             text: `:warning: This replay has already been queued for rendering.`
         });
     }
 
     if (_replay.gameMode !== 0) {
-        return ctx.respond({
-            response_type: 'ephemeral',
+        return ctx.client.chat.postEphemeral({
+            channel: ctx.body.channel?.id!,
+            user: ctx.body.user.id,
             text: `:warning: *Hey <@${ctx.body.user.id}>!* Unfortunately, o!rdr doesn't support replays other than :osu-standard: osu!standard replays, so I can't render this replay. Sorry!`
         });
     }
@@ -73,8 +75,9 @@ export default async function GenerateReplay(ctx: SlackActionMiddlewareArgs<Bloc
         if (err.code == 'ENOENT') {
             await fs.promises.mkdir('.replay')
         } else {
-            return ctx.respond({
-                response_type: 'ephemeral',
+            return ctx.client.chat.postEphemeral({
+                channel: ctx.body.channel?.id!,
+                user: ctx.body.user.id,
                 text: `:warning: *Hey <@${ctx.body.user.id}>!* An unexpected error occurred while trying to handle your replay. Contact the bot maintainer. (${err.code})`
             });
         }
@@ -96,8 +99,9 @@ export default async function GenerateReplay(ctx: SlackActionMiddlewareArgs<Bloc
             fromLastPlayed: true
         })
 
-        await ctx.respond({
-            response_type: 'ephemeral',
+        await ctx.client.chat.postEphemeral({
+            channel: ctx.body.channel?.id!,
+            user: ctx.body.user.id,
             text: `:white_check_mark: This replay is now queued for rendering.`
         });
 
