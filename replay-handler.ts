@@ -139,7 +139,7 @@ socket.on('render_done_json', async (render) => {
                         text: "View Rendered Video",
                         emoji: false
                     },
-                    action_id: "noop",
+                    action_id: "noop_1",
                     url: render.videoUrl
                 } as any;
             }
