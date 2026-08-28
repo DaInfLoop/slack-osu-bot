@@ -10,7 +10,7 @@ export type OsuScore = {
     mode: "osu" | "taiko" | "fruits" | "mania";
     mode_int: number;
     mods: string[];
-    pp: number;
+    pp: number | null;
     rank: string;
     statistics: {
         count_300: number;
@@ -96,12 +96,12 @@ async function generateLastPlayedMessage(score: OsuScore | null, slackId?: strin
             },
             body: {
                 type: "mrkdwn",
-                text: `:osu-score-300: ${score.statistics.count_300} :osu-score-100: ${score.statistics.count_100} :osu-score-50: ${score.statistics.count_50} :osu-score-miss: ${score.statistics.count_miss}\n*pp*: ${score.pp.toFixed(2)}pp`,
+                text: `:osu-score-300: ${score.statistics.count_300} :osu-score-100: ${score.statistics.count_100} :osu-score-50: ${score.statistics.count_50} :osu-score-miss: ${score.statistics.count_miss}\n*pp*: ${score.pp ? score.pp.toFixed(2) + "pp" : "N/A"}`,
                 verbatim: false
             },
             subtext: {
                 type: "mrkdwn",
-                text: `${ruleset} | Mods: ${score.mods.join(", ") || "None"} | ${(score.accuracy * 100).toFixed(2)}% | ${score.max_combo}x | ${score.rank}`,
+                text: `${ruleset} | Mods: ${score.mods.join(", ") || "None"} | ${(score.accuracy * 100).toFixed(2)}% | ${score.max_combo}x | :osu-rank-${score.rank.toLowerCase()}:`,
                 verbatim: false
             },
             actions: [
